@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Agências - Banco do Brasil</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+        <div class="logo-area">
+            <img src="assets/img/bb-logo.png" alt="Logo Banco do Brasil" class="logo-img">
+        </div>
+        <div class="text-area">
+            <h1>Localizador de Agências BB</h1>
+            <p>Encontre a agência mais próxima de você em todo o Brasil.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Digite a cidade ou estado...">
+                <button id="searchBtn">Buscar</button>
+            </div>
+            <div class="filters">
+                <select id="filterState">
+                    <option value="">Todos os Estados</option>
+                    </select>
+            </div>
+        </section>
+
+        <section id="map-container">
+            <div id="map"></div>
+        </section>
+
+        <section id="results-list">
+            <h2>Resultados encontrados:</h2>
+            <div id="agencias-grid" class="grid">
+                <p class="placeholder-text">Use a busca para listar as agências.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 - Localizador de Agências. Desenvolvido para fins de consulta.</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script src="js/api.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
