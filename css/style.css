@@ -107,15 +107,12 @@ header p {
     max-width: 1000px;
     padding: 12px 20px;
     border-radius: 12px;
-    
     box-shadow: var(--shadow-md);
     transition: box-shadow 0.3s ease-in-out;
     
     display: flex;
     gap: 15px;
     align-items: center;
-    position: relative;
-    z-index: 10;
 }
 
 .search-section:hover {
