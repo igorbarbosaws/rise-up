@@ -6,8 +6,10 @@
     --white: #FFFFFF;
     --text-dark: #333333;
     --text-muted: #666666;
+
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.12);
 }
 
 * {
@@ -105,10 +107,19 @@ header p {
     max-width: 1000px;
     padding: 12px 20px;
     border-radius: 12px;
+    
     box-shadow: var(--shadow-md);
+    transition: box-shadow 0.3s ease-in-out;
+    
     display: flex;
     gap: 15px;
     align-items: center;
+    position: relative;
+    z-index: 10;
+}
+
+.search-section:hover {
+    box-shadow: var(--shadow-hover);
 }
 
 .search-box {
@@ -156,7 +167,7 @@ header p {
     font-size: 0.85rem;
     color: var(--bb-blue);
     cursor: pointer;
-    width: 100%; /* Preenche o espaço do container de filtro */
+    width: 100%;
     max-width: 200px;
 }
 
