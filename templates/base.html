@@ -10,6 +10,7 @@
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     
+    {% block styles %}{% endblock %}
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -21,11 +22,17 @@
             </div>
 
             <ul class="nav-menu">
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a href="/"><i class="fas fa-home"></i> <span class="link-text">Início</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="/mapa"><i class="fas fa-map-marker-alt"></i> <span class="link-text">Localizador</span></a>
+                    <a href="/agencias"><i class="fas fa-search-location"></i> <span class="link-text">Consulta Nacional</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/detalhes/0001"><i class="fas fa-info-circle"></i> <span class="link-text">Informações Técnicas</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/dashboard"><i class="fas fa-chart-line"></i> <span class="link-text">Dashboard Geral</span></a>
                 </li>
                 
                 {% if user_level == 'Gestão' %}
@@ -47,7 +54,7 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="page-info">
-                        <h4 class="current-page-name">{% block page_name %}Página Inicial{% endblock %}</h4>
+                        <h4 class="current-page-name">{% block page_name %}{{ page_title if page_title else "Página Inicial" }}{% endblock %}</h4>
                     </div>
                 </div>
                 
@@ -69,6 +76,19 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <script>
+        document.querySelectorAll('.nav-item a').forEach(link => {
+            if (window.location.pathname.startsWith(link.getAttribute('href')) && link.getAttribute('href') !== '/') {
+                link.parentElement.classList.add('active');
+            } else if (link.getAttribute('href') === '/' && window.location.pathname === '/') {
+                link.parentElement.classList.add('active');
+            } else {
+                link.parentElement.classList.remove('active');
+            }
+        });
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

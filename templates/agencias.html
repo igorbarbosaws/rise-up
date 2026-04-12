@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Consulta de Agências - Portal DITEC{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/agencias.css') }}">
+{% endblock %}
+
+{% block page_name %}Consulta Nacional de Agências{% endblock %}
+
+{% block content %}
+<div class="agencias-container">
+    
+    <aside class="filters-sidebar" id="agencias-sidebar">
+        <div class="sidebar-content">
+            <h3 class="filter-title">Filtros Avançados</h3>
+            
+            <div class="filter-group">
+                <label><i class="fas fa-map-marker-alt"></i> Região</label>
+                <select id="filter-regiao" onchange="updateStates()">
+                    <option value="">Todas as Regiões</option>
+                    <option value="Norte">Norte</option>
+                    <option value="Nordeste">Nordeste</option>
+                    <option value="Centro-Oeste">Centro-Oeste</option>
+                    <option value="Sudeste">Sudeste</option>
+                    <option value="Sul">Sul</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-city"></i> Estado</label>
+                <select id="filter-estado" disabled>
+                    <option value="">Selecione a Região</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-layer-group"></i> Segmento / Tipo</label>
+                <div class="segment-options">
+                    <label class="check-container">
+                        <input type="checkbox" value="varejo" checked>
+                        <span class="checkmark color-varejo"></span> Varejo (PF)
+                    </label>
+                    <label class="check-container">
+                        <input type="checkbox" value="pj" checked>
+                        <span class="checkmark color-pj"></span> Empresa (PJ)
+                    </label>
+                    <label class="check-container">
+                        <input type="checkbox" value="agro" checked>
+                        <span class="checkmark color-agro"></span> Agronegócio
+                    </label>
+                    <label class="check-container">
+                        <input type="checkbox" value="estilo" checked>
+                        <span class="checkmark color-estilo"></span> Estilo / Alta Renda
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-tools"></i> Status Infra</label>
+                <div class="segment-options">
+                    <label class="check-container">
+                        <input type="checkbox" value="normal" checked>
+                        <span class="checkmark color-normal"></span> Operação Normal
+                    </label>
+                    <label class="check-container">
+                        <input type="checkbox" value="reforma">
+                        <span class="checkmark color-reforma"></span> Em Reforma
+                    </label>
+                </div>
+            </div>
+
+            <button id="btn-aplicar-filtros" class="btn-primary">
+                <i class="fas fa-filter"></i> Aplicar Filtros
+            </button>
+        </div>
+    </aside>
+
+    <button id="toggle-filters" class="toggle-sidebar-btn" title="Recolher Filtros">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+
+    <section class="results-area">
+        <div class="floating-search-bar">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Pesquisar por nome, prefixo ou cidade...">
+                <button class="search-btn">Buscar</button>
+            </div>
+        </div>
+
+        <div class="view-toggle">
+            <button class="active" id="btn-map" onclick="switchView('map')"><i class="fas fa-map"></i> Mapa</button>
+            <button id="btn-list" onclick="switchView('list')"><i class="fas fa-list"></i> Lista</button>
+        </div>
+
+        <div id="map-view" class="view-container">
+            <div id="google-map" style="width: 100%; height: 100%;"></div>
+        </div>
+
+        <div id="list-view" class="view-container" style="display: none;">
+            <div class="results-table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Prefixo</th>
+                            <th>Nome da Unidade</th>
+                            <th>Cidade/UF</th>
+                            <th>Segmento</th>
+                            <th>Status</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTorh_pI90GOChvWBnurYW6W0Dbcixuwg&callback=initMap&libraries=places" async defer></script>
+
+<script>
+    let map;
+    const sidebar = document.getElementById('agencias-sidebar');
+    const toggleBtn = document.getElementById('toggle-filters');
+    const icon = toggleBtn.querySelector('i');
+
+    const estadosPorRegiao = {
+        'Norte': ['AC', 'AM', 'AP', 'PA', 'RO', 'RR', 'TO'],
+        'Nordeste': ['AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE'],
+        'Centro-Oeste': ['DF', 'GO', 'MT', 'MS'],
+        'Sudeste': ['ES', 'MG', 'RJ', 'SP'],
+        'Sul': ['PR', 'RS', 'SC']
+    };
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById("google-map"), {
+            center: { lat: -15.793889, lng: -47.882778 },
+            zoom: 4,
+            disableDefaultUI: false,
+            zoomControl: true,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false
+        });
+    }
+
+    function updateStates() {
+        const regiaoSel = document.getElementById('filter-regiao').value;
+        const stateSelect = document.getElementById('filter-estado');
+        
+        stateSelect.innerHTML = '<option value="">Todos os Estados</option>';
+        
+        if (regiaoSel && estadosPorRegiao[regiaoSel]) {
+            stateSelect.disabled = false;
+            estadosPorRegiao[regiaoSel].forEach(uf => {
+                let option = document.createElement('option');
+                option.value = uf;
+                option.text = uf;
+                stateSelect.appendChild(option);
+            });
+        } else {
+            stateSelect.disabled = true;
+            stateSelect.innerHTML = '<option value="">Selecione a Região</option>';
+        }
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        toggleBtn.classList.toggle('collapsed');
+        
+        if (sidebar.classList.contains('collapsed')) {
+            icon.classList.replace('fa-chevron-left', 'fa-chevron-right');
+        } else {
+            icon.classList.replace('fa-chevron-right', 'fa-chevron-left');
+        }
+
+        setTimeout(() => {
+            google.maps.event.trigger(map, "resize");
+        }, 300);
+    });
+
+    function switchView(view) {
+        const mapView = document.getElementById('map-view');
+        const listView = document.getElementById('list-view');
+        const btnMap = document.getElementById('btn-map');
+        const btnList = document.getElementById('btn-list');
+        
+        if (view === 'map') {
+            mapView.style.display = 'block';
+            listView.style.display = 'none';
+            btnMap.classList.add('active');
+            btnList.classList.remove('active');
+        } else {
+            mapView.style.display = 'none';
+            listView.style.display = 'block';
+            btnList.classList.add('active');
+            btnMap.classList.remove('active');
+        }
+    }
+</script>
+{% endblock %}

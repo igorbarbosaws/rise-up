@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/detalhes.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="agencias-container">
+
+    <main class="results-area">
+        <header class="agency-header">
+            <div class="header-main-info">
+                <div class="badge-row">
+                    <span class="badge-segmento color-varejo">VAREJO</span>
+                    <span class="badge-esg"><i class="fas fa-leaf"></i> Selo ESG A+</span>
+                </div>
+                <h1>Agência {{ agencia.nome }}</h1>
+                <p class="sub-info">
+                    <i class="fas fa-fingerprint"></i> Prefixo: <strong>{{ agencia.prefixo }}</strong> 
+                    <span class="separator">|</span> 
+                    <i class="fas fa-city"></i> {{ agencia.cidade }} - {{ agencia.estado }}
+                </p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-edit"><i class="fas fa-edit"></i> Editar Dados</button>
+                <button class="btn-primary"><i class="fas fa-tools"></i> Abrir Chamado</button>
+            </div>
+        </header>
+
+        <div class="summary-grid">
+            <div class="info-card-mini status-ok">
+                <p>Status de Operação</p>
+                <h4><i class="fas fa-check-circle"></i> Operação Normal</h4>
+            </div>
+            <div class="info-card-mini status-info">
+                <p>Horário de Atendimento</p>
+                <h4>10:00 às 16:00</h4>
+            </div>
+            <div class="info-card-mini status-warning">
+                <p>Próxima Manutenção</p>
+                <h4>15/05/2026 (Preventiva)</h4>
+            </div>
+            <div class="info-card-mini status-esg">
+                <p>Créditos de Carbono</p>
+                <h4>+12.5 ton/ano</h4>
+            </div>
+        </div>
+
+        <div class="details-layout">
+            <div class="left-column">
+                <section class="details-section card">
+                    <h3><i class="fas fa-info-circle"></i> Informações Técnicas</h3>
+                    <table class="data-table">
+                        <tr>
+                            <td>Endereço Completo:</td>
+                            <td>{{ agencia.endereco }}</td>
+                        </tr>
+                        <tr>
+                            <td>Gerente Geral:</td>
+                            <td>Nome do Gestor Registrado</td>
+                        </tr>
+                        <tr>
+                            <td>Telefone de Contato:</td>
+                            <td>(81) 3456-7890</td>
+                        </tr>
+                        <tr>
+                            <td>Acessibilidade:</td>
+                            <td class="text-success">Totalmente Adaptada (NBR 9050)</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section class="esg-section card">
+                    <h3><i class="fas fa-seedling"></i> Monitoramento de Recursos (ESG)</h3>
+                    <div class="resources-grid">
+                        <div class="resource-item">
+                            <div class="resource-header">
+                                <span><i class="fas fa-bolt"></i> Consumo de Energia</span>
+                                <span class="value">1.240 kWh <small>/mês</small></span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill warning" style="width: 85%;"></div>
+                            </div>
+                            <small class="meta-label">Meta: Manter abaixo de 1.100 kWh</small>
+                        </div>
+
+                        <div class="resource-item">
+                            <div class="resource-header">
+                                <span><i class="fas fa-tint"></i> Consumo de Água</span>
+                                <span class="value">42 m³ <small>/mês</small></span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill success" style="width: 45%;"></div>
+                            </div>
+                            <small class="meta-label">Excelente: 15% abaixo da meta</small>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="right-column">
+                <section class="map-section card">
+                    <h3><i class="fas fa-map-marked-alt"></i> Localização Exata</h3>
+                    <div id="miniMap" class="mini-map">
+                        <div class="map-placeholder">
+                            <i class="fas fa-map-pin"></i>
+                            <p>Carregando Georreferenciamento...</p>
+                        </div>
+                    </div>
+                    <div class="location-footer">
+                        <p class="address-text"><i class="fas fa-location-dot"></i> {{ agencia.endereco }}</p>
+                        <button class="btn-outline" onclick="window.open('https://www.google.com/maps/search/{{ agencia.endereco }}', '_blank')">
+                            Como Chegar <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+                </section>
+
+                <section class="docs-section card">
+                    <h3><i class="fas fa-file-pdf"></i> Documentos</h3>
+                    <ul class="doc-list">
+                        <li><a href="#"><i class="fas fa-file-download"></i> Planta Baixa.pdf</a></li>
+                        <li><a href="#"><i class="fas fa-file-download"></i> Alvará de Funcionamento.pdf</a></li>
+                        <li><a href="#"><i class="fas fa-file-download"></i> Laudo Bombeiros.pdf</a></li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

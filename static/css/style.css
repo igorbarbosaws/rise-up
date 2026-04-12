@@ -207,13 +207,80 @@ footer {
     border-top: 1px solid #EBEBEB;
 }
 
+@media (max-width: 992px) {
+    .left-group { gap: 20px; }
+    .search-section { max-width: 95%; }
+}
 
 @media (max-width: 768px) {
-    header .container { flex-direction: column; gap: 10px; }
+    header .container { 
+        flex-direction: column; 
+        gap: 15px; 
+        text-align: center;
+        padding: 15px 24px;
+    }
+
+    .left-group { 
+        flex-direction: column; 
+        gap: 15px; 
+    }
+
+    .main-nav ul {
+        gap: 15px;
+    }
+
+    .right-group {
+        width: 100%;
+        justify-content: center;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        padding-top: 10px;
+    }
+
+    .text-area {
+        text-align: center;
+    }
+
     .search-section { 
         flex-direction: column; 
-        margin: 20px 24px; 
+        margin: 20px auto; 
         padding: 15px;
+        width: 90%;
     }
-    .search-box, .filters, #filterState { width: 100%; max-width: none; }
+
+    .search-box {
+        width: 100%;
+        padding: 8px 8px 8px 20px;
+    }
+
+    .filters {
+        width: 100%;
+    }
+
+    #filterState {
+        width: 100%;
+        max-width: none;
+    }
+
+    #map { 
+        height: 300px; 
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-img {
+        height: 28px;
+    }
+
+    header h1 {
+        font-size: 0.8rem;
+    }
+
+    #results-list h2 {
+        font-size: 1.2rem;
+        text-align: center;
+    }
 }

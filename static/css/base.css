@@ -24,7 +24,6 @@ body {
     align-items: stretch;
 }
 
-/* --- SIDEBAR (Começa retraída) --- */
 #sidebar {
     min-width: var(--sidebar-collapsed-width);
     max-width: var(--sidebar-collapsed-width);
@@ -35,10 +34,9 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
-    overflow: hidden; /* Garante que o texto não "vaze" ao fechar */
+    overflow: hidden;
 }
 
-/* Estado Expandido (quando clicamos no toggle) */
 #sidebar.active {
     min-width: var(--sidebar-width);
     max-width: var(--sidebar-width);
@@ -52,11 +50,11 @@ body {
     gap: 12px;
     height: 75px;
     box-sizing: border-box;
-    justify-content: center; /* Centralizado por padrão */
+    justify-content: center;
 }
 
 #sidebar.active .sidebar-header {
-    justify-content: flex-start; /* Alinha à esquerda ao expandir */
+    justify-content: flex-start;
 }
 
 .logo-bb {
@@ -65,15 +63,14 @@ body {
     filter: brightness(0) saturate(100%) invert(88%) sepia(82%) saturate(3065%) hue-rotate(354deg) brightness(107%) contrast(106%);
 }
 
-/* Controle de visibilidade dos textos */
 .brand-text, .link-text {
-    display: none; /* Escondidos por padrão */
+    display: none;
     white-space: nowrap;
 }
 
 #sidebar.active .brand-text, 
 #sidebar.active .link-text {
-    display: inline-block; /* Aparecem quando ativo */
+    display: inline-block;
 }
 
 .brand-text {
@@ -82,7 +79,6 @@ body {
     letter-spacing: 1px;
 }
 
-/* --- MENU DE NAVEGAÇÃO --- */
 .nav-menu {
     padding: 20px 0;
     list-style: none;
@@ -90,7 +86,7 @@ body {
 }
 
 .nav-item a {
-    padding: 15px 0; /* Padding centralizado para ícones */
+    padding: 15px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -129,7 +125,7 @@ body {
 }
 
 #sidebar:not(.active) .nav-item.active a {
-    border-left: none; /* Remove a borda se estiver colapsado para não quebrar o visual */
+    border-left-width: 4px;
 }
 
 .admin-section {
@@ -137,7 +133,6 @@ body {
     margin-top: 10px;
 }
 
-/* --- CONTEÚDO --- */
 #content {
     width: 100%;
     transition: all var(--transition-speed);
@@ -183,7 +178,6 @@ body {
     font-size: 1rem;
 }
 
-/* --- USER CONTROLS --- */
 .user-controls {
     display: flex;
     align-items: center;
@@ -224,7 +218,6 @@ body {
     transition: 0.3s;
 }
 
-/* --- CARDS E BODY --- */
 .main-body {
     padding: 40px;
     min-height: calc(100vh - 75px);
