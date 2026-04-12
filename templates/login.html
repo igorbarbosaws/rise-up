@@ -4,25 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Portal DITEC</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/login.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body class="login-page">
     <div class="login-wrapper">
         <div class="login-card">
             <div class="login-header">
-                <img src="../assets/img/bb-logo.png " alt="Banco do Brasil" class="login-logo">
+                <img src="{{ url_for('static', filename='assets/img/bb-logo.png') }}" alt="Banco do Brasil" class="login-logo">
                 <h1 class="portal-title">Portal DITEC</h1>
                 <h2 class="subtitle">Acesso ao Sistema</h2>
             </div>
 
-            <form id="loginForm">
+            <form id="loginForm" action="{{ url_for('login') }}" method="POST">
                 <div class="input-group">
                     <label for="username">Usuário</label>
                     <div class="input-field">
                         <i class="fa-regular fa-user"></i>
-                        <input type="text" id="username" placeholder="Digite seu usuário" required>
+                        <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
                     </div>
                 </div>
 
@@ -30,7 +32,7 @@
                     <label for="password">Senha</label>
                     <div class="input-field">
                         <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="password" placeholder="Digite sua senha" required>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
                     </div>
                 </div>
 
@@ -50,6 +52,5 @@
         </footer>
     </div>
 
-    <script src="../js/login.js"></script>
-</body>
+    </body>
 </html>

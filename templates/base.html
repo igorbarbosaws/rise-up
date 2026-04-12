@@ -16,7 +16,7 @@
     <div class="wrapper">
         <nav id="sidebar">
             <div class="sidebar-header">
-                <img src="{{ url_for('static', filename='assets/img/bb-logo.png') }}" alt="Logo BB">
+                <img src="{{ url_for('static', filename='assets/img/bb-logo.png') }}" alt="Logo BB" class="logo-bb">
                 <span class="brand-text">Portal DITEC</span>
             </div>
 
@@ -28,7 +28,7 @@
                     <a href="/mapa"><i class="fas fa-map-marker-alt"></i> <span class="link-text">Localizador</span></a>
                 </li>
                 
-                {% if user_level == 'admin' %}
+                {% if user_level == 'Gestão' %}
                 <li class="nav-item admin-section">
                     <a href="/admin"><i class="fas fa-user-shield"></i> <span class="link-text">Gestão DITEC</span></a>
                 </li>
@@ -43,18 +43,18 @@
         <div id="content">
             <nav class="navbar-top">
                 <div class="left-nav">
-                    <button type="button" class="menu-toggle">
+                    <button type="button" class="menu-toggle" id="sidebarCollapse">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="page-info">
-                        <h4 class="current-page-name">{% block page_name %}Dashboard{% endblock %}</h4>
+                        <h4 class="current-page-name">{% block page_name %}Página Inicial{% endblock %}</h4>
                     </div>
                 </div>
                 
                 <div class="user-controls">
                     <div class="user-details">
-                        <span class="user-name">Igor Barbosa</span>
-                        <small class="user-role">{{ user_level | upper }}</small>
+                        <span class="user-name">{{ user_name }}</span>
+                        <small class="user-role">{{ user_level }}</small>
                     </div>
                     <div class="user-avatar">
                         <i class="fas fa-user"></i>

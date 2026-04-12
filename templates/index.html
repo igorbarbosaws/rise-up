@@ -1,64 +1,39 @@
 {% extends "base.html" %}
 
-{% block title %}Início | Portal DITEC{% endblock %}
-
-{% block page_name %}Página Inicial{% endblock %}
-
-{% block extra_css %}
-<style>
-    .info-card {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-    }
-    
-    .card-content {
-        flex-grow: 1;
-    }
-
-    .admin-highlight {
-        border: 2px solid var(--amarelo-bb) !important;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="home-container">
-    <div class="welcome-banner">
-        <h1>Olá, {{ user_name }}</h1>
-        <p>Seja bem-vindo ao <strong>Portal DITEC</strong>. Este é o seu painel central de ferramentas e gestão tecnológica.</p>
+<div class="welcome-section">
+    <h1>Olá, {{ user_name }}</h1>
+    <p>Seja bem-vindo ao <strong>Portal DITEC</strong>. Selecione um módulo abaixo para começar.</p>
+</div>
+
+<div class="cards-grid">
+    <div class="info-card">
+        <div class="card-content">
+            <div class="card-icon"><i class="fas fa-map-marked-alt"></i></div>
+            <h3>Localizador de Agências</h3>
+            <p>Consulte a base de dados nacional, visualize unidades no mapa e verifique detalhes técnicos das agências do Banco do Brasil.</p>
+        </div>
+        <a href="/mapa" class="btn-card">Acessar Mapa</a>
     </div>
 
-    <div class="cards-grid">
-        <div class="info-card">
-            <div class="card-content">
-                <div class="card-icon"><i class="fas fa-map-marked-alt"></i></div>
-                <h3>Localizador de Agências</h3>
-                <p>Consulte a base de dados nacional, visualize unidades no mapa e verifique detalhes técnicos das agências.</p>
-            </div>
-            <a href="/mapa" class="btn-action">Acessar Mapa</a>
+    {% if user_level == 'Gestão' %}
+    <div class="info-card admin-card">
+        <div class="card-content">
+            <div class="card-icon"><i class="fas fa-user-shield"></i></div>
+            <h3>Gestão de Dados</h3>
+            <p>Acesso de <strong>Gestor</strong> liberado. Você pode incluir, editar ou remover registros de agências da base central.</p>
         </div>
+        <a href="/admin" class="btn-card" style="background: #856404;">Gerenciar Base</a>
+    </div>
+    {% endif %}
 
-        {% if user_level == 'admin' %}
-        <div class="info-card admin-highlight">
-            <div class="card-content">
-                <div class="card-icon"><i class="fas fa-user-shield"></i></div>
-                <h3>Gestão de Dados</h3>
-                <p>Nível de acesso: <strong>Administrador</strong>. Permite inclusão, alteração e exclusão de agências no sistema.</p>
-            </div>
-            <a href="/admin" class="btn-action">Gerenciar Base</a>
+    <div class="info-card">
+        <div class="card-content">
+            <div class="card-icon"><i class="fas fa-headset"></i></div>
+            <h3>Suporte Técnico</h3>
+            <p>Precisa de ajuda com o sistema ou quer solicitar novas permissões? Abra um chamado diretamente com a equipe DITEC.</p>
         </div>
-        {% endif %}
-
-        <div class="info-card">
-            <div class="card-content">
-                <div class="card-icon"><i class="fas fa-headset"></i></div>
-                <h3>Suporte & Acesso</h3>
-                <p>Abra chamados para a DITEC ou solicite novas permissões de acesso para módulos específicos.</p>
-            </div>
-            <a href="#" class="btn-action" style="background-color: #555;">Abrir Chamado</a>
-        </div>
+        <a href="#" class="btn-card" style="background: #555;">Abrir Chamado</a>
     </div>
 </div>
 {% endblock %}

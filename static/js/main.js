@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
 
-    const menuToggle = document.querySelector('.menu-toggle');
+    const menuToggle = document.getElementById('sidebarCollapse');
     const sidebar = document.querySelector('#sidebar');
     const content = document.querySelector('#content');
 
@@ -75,7 +75,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
-
 
 function focarNoMapa(lat, lng) {
     if (typeof map !== 'undefined') {

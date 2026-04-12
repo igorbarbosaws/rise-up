@@ -7,6 +7,7 @@
     --sidebar-width: 260px;
     --sidebar-collapsed-width: 80px;
     --transition-speed: 0.3s;
+    --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
 }
 
 body {
@@ -14,6 +15,7 @@ body {
     background-color: var(--bg-cinza);
     margin: 0;
     overflow-x: hidden;
+    color: var(--texto-escuro);
 }
 
 .wrapper {
@@ -22,9 +24,10 @@ body {
     align-items: stretch;
 }
 
+/* --- SIDEBAR (Começa retraída) --- */
 #sidebar {
-    min-width: var(--sidebar-width);
-    max-width: var(--sidebar-width);
+    min-width: var(--sidebar-collapsed-width);
+    max-width: var(--sidebar-collapsed-width);
     background: var(--azul-bb);
     color: #fff;
     min-height: 100vh;
@@ -32,11 +35,13 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
+    overflow: hidden; /* Garante que o texto não "vaze" ao fechar */
 }
 
+/* Estado Expandido (quando clicamos no toggle) */
 #sidebar.active {
-    min-width: var(--sidebar-collapsed-width);
-    max-width: var(--sidebar-collapsed-width);
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
 }
 
 .sidebar-header {
@@ -47,29 +52,37 @@ body {
     gap: 12px;
     height: 75px;
     box-sizing: border-box;
-}
-
-.sidebar-header img {
-    width: 35px;
-    transition: all var(--transition-speed);
+    justify-content: center; /* Centralizado por padrão */
 }
 
 #sidebar.active .sidebar-header {
-    justify-content: center;
-    padding: 25px 0;
+    justify-content: flex-start; /* Alinha à esquerda ao expandir */
 }
 
-#sidebar.active .brand-text {
-    display: none;
+.logo-bb {
+    width: 35px;
+    transition: all var(--transition-speed);
+    filter: brightness(0) saturate(100%) invert(88%) sepia(82%) saturate(3065%) hue-rotate(354deg) brightness(107%) contrast(106%);
+}
+
+/* Controle de visibilidade dos textos */
+.brand-text, .link-text {
+    display: none; /* Escondidos por padrão */
+    white-space: nowrap;
+}
+
+#sidebar.active .brand-text, 
+#sidebar.active .link-text {
+    display: inline-block; /* Aparecem quando ativo */
 }
 
 .brand-text {
     font-weight: 800;
     font-size: 1.1rem;
     letter-spacing: 1px;
-    white-space: nowrap;
 }
 
+/* --- MENU DE NAVEGAÇÃO --- */
 .nav-menu {
     padding: 20px 0;
     list-style: none;
@@ -77,9 +90,10 @@ body {
 }
 
 .nav-item a {
-    padding: 15px 25px;
+    padding: 15px 0; /* Padding centralizado para ícones */
     display: flex;
     align-items: center;
+    justify-content: center;
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
     font-size: 0.95rem;
@@ -88,25 +102,19 @@ body {
     border-left: 4px solid transparent;
 }
 
+#sidebar.active .nav-item a {
+    padding: 15px 25px;
+    justify-content: flex-start;
+}
+
 .nav-item a i {
     font-size: 1.2rem;
     width: 25px;
-    margin-right: 15px;
     text-align: center;
 }
 
-#sidebar.active .nav-item a {
-    justify-content: center;
-    padding: 15px 0;
-    border-left: none;
-}
-
 #sidebar.active .nav-item a i {
-    margin-right: 0;
-}
-
-#sidebar.active .link-text {
-    display: none;
+    margin-right: 15px;
 }
 
 .nav-item a:hover {
@@ -120,11 +128,16 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
+#sidebar:not(.active) .nav-item.active a {
+    border-left: none; /* Remove a borda se estiver colapsado para não quebrar o visual */
+}
+
 .admin-section {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     margin-top: 10px;
 }
 
+/* --- CONTEÚDO --- */
 #content {
     width: 100%;
     transition: all var(--transition-speed);
@@ -170,6 +183,7 @@ body {
     font-size: 1rem;
 }
 
+/* --- USER CONTROLS --- */
 .user-controls {
     display: flex;
     align-items: center;
@@ -209,8 +223,86 @@ body {
     border: 2px solid transparent;
     transition: 0.3s;
 }
+
+/* --- CARDS E BODY --- */
 .main-body {
     padding: 40px;
     min-height: calc(100vh - 75px);
     box-sizing: border-box;
+}
+
+.welcome-section {
+    margin-bottom: 40px;
+}
+
+.welcome-section h1 {
+    color: var(--azul-bb);
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.info-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 5px solid var(--azul-bb);
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.info-card.admin-card {
+    border-top-color: var(--amarelo-bb);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    color: var(--azul-bb);
+    margin-bottom: 20px;
+}
+
+.info-card h3 {
+    color: var(--azul-bb);
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.info-card p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.btn-card {
+    display: inline-block;
+    padding: 12px 20px;
+    background: var(--azul-bb);
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-card:hover {
+    background: var(--azul-escuro);
+}
+
+.admin-card .btn-card {
+    background: #000;
 }
