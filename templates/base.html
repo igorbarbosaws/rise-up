@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Portal DITEC{% endblock %}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="wrapper">
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <img src="{{ url_for('static', filename='assets/img/logo-bb.png') }}" alt="Logo BB">
+                <span class="brand-text">Portal DITEC</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <a href="/"><i class="fas fa-home"></i> Início</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/mapa"><i class="fas fa-map-marker-alt"></i> Localizador</a>
+                </li>
+                
+                {% if user_level == 'admin' %}
+                <li class="nav-item admin-section">
+                    <a href="/admin"><i class="fas fa-user-shield"></i> Gestão DITEC</a>
+                </li>
+                {% endif %}
+
+                <li class="nav-item logout">
+                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div id="content">
+            <nav class="navbar-top">
+                <div class="page-info">
+                    <h4 class="current-page-name">{% block page_name %}Dashboard{% endblock %}</h4>
+                </div>
+                
+                <div class="user-controls">
+                    <div class="user-details">
+                        <span class="user-name">Igor Barbosa</span>
+                        <small class="user-role">{{ user_level | upper }}</small>
+                    </div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </nav>
+
+            <main class="main-body">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

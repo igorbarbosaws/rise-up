@@ -1,85 +1,49 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Agências - Banco do Brasil</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
+{% extends "base.html" %}
 
-    <header>
-        <div class="container header-grid">
-            <button class="menu-toggle" aria-label="Abrir menu">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <div class="logo-area">
-                <img src="assets/img/bb-logo.png" alt="Logo Banco do Brasil" class="logo-img">
-            </div>
-            
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="#" class="active">Agências</a></li>
-    <div class="container">
-        <div class="left-group">
-            <div class="logo-area">
-                <img src="assets/img/bb-logo.png" alt="Logo BB" class="logo-img">
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="#">Agências</a></li>
-                    <li><a href="#">Serviços</a></li>
-                    <li><a href="#">Produtos</a></li>
-                    <li><a href="#">Atendimento</a></li>
-                </ul>
-            </nav>
+{% block title %}Início | Portal DITEC{% endblock %}
 
-            <div class="text-area">
-                <h1>Localizador</h1>
-                <p>Encontre a sua agência</p>
-            </div>
+{% block page_name %}Página Inicial{% endblock %}
 
-            <div class="right-actions">
-                <button class="account-btn">ACESSE SUA CONTA <i class="fas fa-chevron-right"></i></button>
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <div class="welcome-banner">
+        <h1>Olá, Igor Barbosa</h1>
+        <p>Seja bem-vindo ao <strong>Portal DITEC</strong>. Este é o seu painel central de ferramentas e gestão tecnológica.</p>
+    </div>
+
+    <div class="cards-grid">
+        <div class="info-card">
+            <div>
+                <div class="card-icon"><i class="fas fa-map-marked-alt"></i></div>
+                <h3>Localizador de Agências</h3>
+                <p>Consulte a base de dados nacional, visualize unidades no mapa e verifique detalhes técnicos das agências.</p>
             </div>
+            <a href="/mapa" class="btn-action">Acessar Mapa</a>
         </div>
-</header>
 
-    <main class="container">
-        <section class="search-section">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Digite a cidade ou estado...">
-                <button id="searchBtn">Buscar</button>
+        {% if user_level == 'admin' %}
+        <div class="info-card" style="border: 2px solid var(--amarelo-bb);">
+            <div>
+                <div class="card-icon"><i class="fas fa-user-shield"></i></div>
+                <h3>Gestão de Dados</h3>
+                <p>Nível de acesso: <strong>Administrador</strong>. Permite inclusão, alteração e exclusão de agências no sistema.</p>
             </div>
-            <div class="filters">
-                <select id="filterState">
-                    <option value="">Todos os Estados</option>
-                </select>
+            <a href="/admin" class="btn-action">Gerenciar Base</a>
+        </div>
+        {% endif %}
+
+        <div class="info-card">
+            <div>
+                <div class="card-icon"><i class="fas fa-headset"></i></div>
+                <h3>Suporte & Acesso</h3>
+                <p>Abra chamados para a DITEC ou solicite novas permissões de acesso para módulos específicos.</p>
             </div>
-        </section>
-
-        <section id="map-container">
-            <div id="map"></div>
-        </section>
-
-        <section id="results-list">
-            <h2>Resultados encontrados:</h2>
-            <div id="agencias-grid" class="grid">
-                <p class="placeholder-text">Use a busca para listar as agências.</p>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2026 - Localizador de Agências. Desenvolvido para fins de consulta.</p>
-    </footer>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <script src="js/api.js"></script>
-    <script src="js/map.js"></script>
-    <script src="js/main.js"></script>
-</body>
-</html>
+            <a href="#" class="btn-action" style="background-color: #555;">Abrir Chamado</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

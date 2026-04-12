@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Portal DITEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body class="login-page">
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="../assets/img/bb-logo.png " alt="Banco do Brasil" class="login-logo">
+                <h1 class="portal-title">Portal DITEC</h1>
+                <h2 class="subtitle">Acesso ao Sistema</h2>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username">Usuário</label>
+                    <div class="input-field">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" id="username" placeholder="Digite seu usuário" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Senha</label>
+                    <div class="input-field">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="password" placeholder="Digite sua senha" required>
+                    </div>
+                </div>
+
+                <div class="login-options">
+                    <a href="#" class="option-link">Solicitar acesso</a>
+                    <span class="separator">|</span>
+                    <a href="#" class="option-link">Esqueci minha senha</a>
+                </div>
+
+                <button type="submit" class="btn-login">ENTRAR</button>
+            </form>
+            
+            <p id="loginError" class="error-msg">Usuário ou senha inválidos.</p>
+        </div>
+        <footer class="login-footer">
+            <p>© 2026 Banco do Brasil S.A. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <script src="../js/login.js"></script>
+</body>
+</html>
