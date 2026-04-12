@@ -16,34 +16,39 @@
     <div class="wrapper">
         <nav id="sidebar">
             <div class="sidebar-header">
-                <img src="{{ url_for('static', filename='assets/img/logo-bb.png') }}" alt="Logo BB">
+                <img src="{{ url_for('static', filename='assets/img/bb-logo.png') }}" alt="Logo BB">
                 <span class="brand-text">Portal DITEC</span>
             </div>
 
             <ul class="nav-menu">
                 <li class="nav-item active">
-                    <a href="/"><i class="fas fa-home"></i> Início</a>
+                    <a href="/"><i class="fas fa-home"></i> <span class="link-text">Início</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="/mapa"><i class="fas fa-map-marker-alt"></i> Localizador</a>
+                    <a href="/mapa"><i class="fas fa-map-marker-alt"></i> <span class="link-text">Localizador</span></a>
                 </li>
                 
                 {% if user_level == 'admin' %}
                 <li class="nav-item admin-section">
-                    <a href="/admin"><i class="fas fa-user-shield"></i> Gestão DITEC</a>
+                    <a href="/admin"><i class="fas fa-user-shield"></i> <span class="link-text">Gestão DITEC</span></a>
                 </li>
                 {% endif %}
 
                 <li class="nav-item logout">
-                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> <span class="link-text">Sair</span></a>
                 </li>
             </ul>
         </nav>
 
         <div id="content">
             <nav class="navbar-top">
-                <div class="page-info">
-                    <h4 class="current-page-name">{% block page_name %}Dashboard{% endblock %}</h4>
+                <div class="left-nav">
+                    <button type="button" class="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-info">
+                        <h4 class="current-page-name">{% block page_name %}Dashboard{% endblock %}</h4>
+                    </div>
                 </div>
                 
                 <div class="user-controls">
@@ -63,6 +68,7 @@
         </div>
     </div>
 
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
