@@ -1,0 +1,72 @@
+:root {
+    --blue-bb: #004481;
+    --yellow-bb: #F8D117;
+}
+
+.admin-container {
+    padding: 10px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Estilo das Abas */
+.nav-pills .nav-link {
+    color: var(--blue-bb);
+    font-weight: 600;
+    border: 1px solid transparent;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--blue-bb);
+    color: white;
+}
+
+.nav-pills .nav-link:hover:not(.active) {
+    background-color: #f0f4f8;
+    border-color: var(--blue-bb);
+}
+
+.table thead th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #6c757d;
+    letter-spacing: 0.5px;
+    border-top: none;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 10px 15px;
+}
+
+.form-control:focus {
+    border-color: var(--blue-bb);
+    box-shadow: 0 0 0 0.2rem rgba(0, 68, 129, 0.1);
+}
+
+.btn-primary {
+    background-color: var(--blue-bb);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #003366;
+}
+
+.chart-box {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-top: 4px solid var(--blue-bb);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
