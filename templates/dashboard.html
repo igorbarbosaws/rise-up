@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard DITEC - Gestão Estratégica</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dashboard-body">
+
+<div class="dashboard-container">
+    <div class="dash-header">
+        <h4>Dashboard de Infraestrutura e ESG</h4>
+        <span class="text-muted">Gestor: Igor Barbosa</span>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card reforma">
+            <h3>Agências em Reforma</h3>
+            <div class="value">{{ stats.em_reforma }}</div>
+            <span class="trend">Status: Prioritário</span>
+        </div>
+        <div class="stat-card">
+            <h3>Consumo de Energia (Mês)</h3>
+            <div class="value">1.240 <small>kWh</small></div>
+            <span class="trend-down">▼ 4.2% vs mês ant.</span>
+        </div>
+        <div class="stat-card">
+            <h3>Consumo de Água (Mês)</h3>
+            <div class="value">42 <small>m³</small></div>
+            <span class="trend-up">▲ 1.5% vs meta</span>
+        </div>
+        <div class="stat-card">
+            <h3>Créditos de Carbono</h3>
+            <div class="value">94%</div>
+            <span class="text-success">Meta Atingida</span>
+        </div>
+    </div>
+
+    <div class="main-dashboard-content">
+        
+        <div class="chart-box">
+            <h5><i class="fas fa-map-marker-alt"></i> Distribuição Geográfica das Reformas</h5>
+            <div id="map-container">
+                </div>
+        </div>
+
+        <div class="chart-box">
+            <h5>Eficiência Energética por Região</h5>
+            <div class="efficiency-rank">
+                <div class="rank-item rank-a">Nordeste - 1.2M kWh</div>
+                <div class="rank-item rank-b">Sudeste - 2.5M kWh</div>
+                <div class="rank-item rank-c">Sul - 3.1M kWh</div>
+                <div class="rank-item rank-d">Centro-Oeste - 4.2M kWh</div>
+                <div class="rank-item rank-e">Norte - 5.8M kWh</div>
+            </div>
+            
+            <div class="mt-4">
+                <h5>Tendência de Consumo</h5>
+                <canvas id="trendChart" style="width:100%; height:150px;"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Inicialização do Mapa focado no Brasil/Recife
+    var map = L.map('map-container').setView([-8.0631, -34.8711], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    // Exemplo de marcador (Pernambuco)
+    L.circle([-8.0631, -34.8711], {
+        color: 'orange',
+        fillColor: '#ffc107',
+        fillOpacity: 0.5,
+        radius: 50000
+    }).addTo(map).bindPopup('Recife: 5 Agências em Reforma');
+
+    // Mini gráfico de tendência
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr'],
+            datasets: [{
+                label: 'Consumo kWh',
+                data: [1300, 1250, 1280, 1240],
+                borderColor: '#004481',
+                tension: 0.4
+            }]
+        },
+        options: { plugins: { legend: { display: false } } }
+    });
+</script>
+
+</body>
+</html>

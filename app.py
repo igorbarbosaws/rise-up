@@ -75,6 +75,24 @@ def mapa():
                            user_name=session.get('user_name'),
                            page_title="Localizador de Agências")
 
+@app.route('/dashboard')
+def dashboard():
+    if 'user_name' not in session:
+        return redirect(url_for('login'))
+
+    stats_dashboard = {
+        'em_reforma': 15,
+        'consumo_energia': '1.240 kWh',
+        'consumo_agua': '42 m³',
+        'carbono_status': '94%'
+    }
+        
+    return render_template('dashboard.html', 
+                           user_level=session.get('user_level'), 
+                           user_name=session.get('user_name'),
+                           page_title="Dashboard Estratégico DITEC",
+                           stats=stats_dashboard)
+
 @app.route('/logout')
 def logout():
     session.clear()
