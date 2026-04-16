@@ -93,6 +93,10 @@ def dashboard():
                            page_title="Dashboard Estratégico DITEC",
                            stats=stats_dashboard)
 
+@app.route('/admin')
+def admin():
+    return render_template('admin.html', stats=stats)
+
 @app.route('/logout')
 def logout():
     session.clear()
