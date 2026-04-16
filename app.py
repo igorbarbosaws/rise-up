@@ -95,7 +95,18 @@ def dashboard():
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html', stats=stats)
+    stats = {
+        'em_reforma': 15,
+        'consumo_energia': 1240,
+        'consumo_agua': 42,
+        'carbono': 94
+    }
+
+    return render_template('admin.html', 
+                           stats=stats, 
+                           user_name="Igor Barbosa", 
+                           user_level="Gestão", 
+                           page_title="Gestão DITEC")
 
 @app.route('/logout')
 def logout():
