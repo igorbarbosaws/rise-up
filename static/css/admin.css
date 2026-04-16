@@ -1,72 +1,140 @@
 :root {
-    --blue-bb: #004481;
-    --yellow-bb: #F8D117;
+    --ditec-blue: #004481; 
+    --ditec-text: #333333;
+    --ditec-muted: #888888;
 }
 
-.admin-container {
-    padding: 10px;
-    animation: fadeIn 0.5s ease-in-out;
+.admin-wrapper {
+    padding: 20px 30px;
+    font-family: 'Montserrat', sans-serif;
 }
 
-/* Estilo das Abas */
-.nav-pills .nav-link {
-    color: var(--blue-bb);
-    font-weight: 600;
+.text-primary-bb {
+    color: var(--ditec-blue) !important;
+}
+
+.page-title {
+    font-size: 1.6rem;
+    letter-spacing: -0.5px;
+}
+.ditec-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    border: none;
+    margin-bottom: 20px;
+}
+
+.custom-tabs {
+    border-bottom: none;
+    gap: 12px;
+}
+
+.custom-tabs .nav-link {
+    color: var(--ditec-muted);
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 12px 26px;
+    border-radius: 50px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     border: 1px solid transparent;
-    margin-right: 10px;
     transition: all 0.3s ease;
 }
 
-.nav-pills .nav-link.active {
-    background-color: var(--blue-bb);
+.custom-tabs .nav-link:hover {
+    color: var(--ditec-blue);
+    background-color: #f8f9fa;
+}
+
+.custom-tabs .nav-link.active {
+    background-color: var(--ditec-blue);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 68, 129, 0.25);
+    transform: translateY(-1px);
+}
+
+.btn-primary-bb {
+    background-color: var(--ditec-blue);
     color: white;
-}
-
-.nav-pills .nav-link:hover:not(.active) {
-    background-color: #f0f4f8;
-    border-color: var(--blue-bb);
-}
-
-.table thead th {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    color: #6c757d;
-    letter-spacing: 0.5px;
-    border-top: none;
-}
-
-.form-control {
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    padding: 10px 15px;
-}
-
-.form-control:focus {
-    border-color: var(--blue-bb);
-    box-shadow: 0 0 0 0.2rem rgba(0, 68, 129, 0.1);
-}
-
-.btn-primary {
-    background-color: var(--blue-bb);
     border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-bb:hover {
+    background-color: #00305a;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 68, 129, 0.3);
+}
+
+.btn-outline-primary-bb {
+    color: var(--ditec-blue);
+    border: 2px solid var(--ditec-blue);
+    background: transparent;
+}
+
+.btn-outline-primary-bb:hover {
+    background: var(--ditec-blue);
+    color: #fff;
+}
+
+.custom-table {
+    margin-top: 10px;
+}
+
+.custom-table thead th {
+    color: var(--ditec-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.custom-table tbody td {
+    padding: 18px 10px;
+    border-bottom: 1px solid #f8f9fa;
+    vertical-align: middle;
+}
+
+.badge-admin {
+    background-color: rgba(0, 68, 129, 0.1);
+    color: var(--ditec-blue);
+    padding: 8px 14px;
     border-radius: 8px;
-    padding: 8px 20px;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.btn-action-delete {
+    background: #fff0f0;
+    color: #dc3545;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.btn-action-delete:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+.custom-input {
+    background-color: #fcfcfc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 15px;
     font-weight: 600;
+    color: var(--ditec-text);
+    transition: all 0.3s;
 }
 
-.btn-primary:hover {
-    background-color: #003366;
-}
-
-.chart-box {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border-top: 4px solid var(--blue-bb);
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+.custom-input:focus {
+    border-color: var(--ditec-blue);
+    box-shadow: 0 0 0 3px rgba(0, 68, 129, 0.1);
+    background-color: #fff;
+    outline: none;
 }
