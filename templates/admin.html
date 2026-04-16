@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+
+<div class="admin-container">
+    <div class="dash-header mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="mb-0 fw-bold text-uppercase" style="color: var(--blue-bb); letter-spacing: 1px;">Painel de Controle</h4>
+            <p class="text-muted small mb-0">Administração do Sistema DITEC</p>
+        </div>
+        <button class="btn btn-primary btn-sm"><i class="fas fa-save me-2"></i>Salvar Alterações</button>
+    </div>
+
+    <ul class="nav nav-pills mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="users-tab" data-bs-toggle="pill" data-bs-target="#users" type="button">Usuários</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="agencies-tab" data-bs-toggle="pill" data-bs-target="#agencies" type="button">Agências</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="reforms-tab" data-bs-toggle="pill" data-bs-target="#reforms" type="button">Reformas</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+        <div class="tab-pane fade show active" id="users" role="tabpanel">
+            <div class="chart-box">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Usuários Cadastrados</h5>
+                    <button class="btn btn-outline-primary btn-sm"><i class="fas fa-plus me-1"></i> Novo Usuário</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nome</th>
+                                <th>E-mail</th>
+                                <th>Nível de Acesso</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Igor Barbosa</td>
+                                <td>igor@ditec.com</td>
+                                <td><span class="badge bg-primary">Administrador</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="agencies" role="tabpanel">
+            <div class="chart-box">
+                <h5 class="fw-bold mb-4">Ajustar Informações das Agências</h5>
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Prefixo da Agência</label>
+                            <input type="text" class="form-control" placeholder="Ex: 0001">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Nome da Unidade</label>
+                            <input type="text" class="form-control" placeholder="Ex: Recife Antigo">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Endereço Completo</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">Horário Funcionamento</label>
+                            <input type="text" class="form-control" placeholder="10:00 às 16:00">
+                        </div>
+                        <div class="col-md-8 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Atualizar Agência</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="reforms" role="tabpanel">
+            <div class="chart-box">
+                <h5 class="fw-bold mb-4">Dados de Reformas e ESG</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold text-muted">Total Agências em Reforma</label>
+                        <input type="number" class="form-control" value="15">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold text-muted">Meta de Carbono (%)</label>
+                        <input type="number" class="form-control" value="94">
+                    </div>
+                    <div class="col-12 text-end">
+                        <button class="btn btn-primary">Sincronizar Indicadores</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
