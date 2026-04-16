@@ -23,26 +23,26 @@
 
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="/"><i class="fas fa-home"></i> <span class="link-text">Início</span></a>
+                    <a href="{{ url_for('index') }}"><i class="fas fa-home"></i> <span class="link-text">Início</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="/agencias"><i class="fas fa-search-location"></i> <span class="link-text">Consulta Nacional</span></a>
+                    <a href="{{ url_for('agencias') }}"><i class="fas fa-search-location"></i> <span class="link-text">Consulta Nacional</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="/detalhes/0001"><i class="fas fa-info-circle"></i> <span class="link-text">Informações Técnicas</span></a>
+                    <a href="{{ url_for('detalhes', prefixo='0001') }}"><i class="fas fa-info-circle"></i> <span class="link-text">Informações Técnicas</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="/dashboard"><i class="fas fa-chart-line"></i> <span class="link-text">Dashboard Geral</span></a>
+                    <a href="{{ url_for('dashboard') }}"><i class="fas fa-chart-line"></i> <span class="link-text">Dashboard Geral</span></a>
                 </li>
                 
                 {% if user_level == 'Gestão' %}
                 <li class="nav-item admin-section">
-                    <a href="/admin"><i class="fas fa-user-shield"></i> <span class="link-text">Gestão DITEC</span></a>
+                    <a href="{{ url_for('admin') }}"><i class="fas fa-user-shield"></i> <span class="link-text">Gestão DITEC</span></a>
                 </li>
                 {% endif %}
 
                 <li class="nav-item logout">
-                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> <span class="link-text">Sair</span></a>
+                    <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span class="link-text">Sair</span></a>
                 </li>
             </ul>
         </nav>
@@ -78,10 +78,13 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
     <script>
-        document.querySelectorAll('.nav-item a').forEach(link => {
-            if (window.location.pathname.startsWith(link.getAttribute('href')) && link.getAttribute('href') !== '/') {
+        document.querySelectorAll('.nav-menu .nav-item a').forEach(link => {
+            const currentPath = window.location.pathname;
+            const linkPath = link.getAttribute('href');
+
+            if (linkPath === currentPath) {
                 link.parentElement.classList.add('active');
-            } else if (link.getAttribute('href') === '/' && window.location.pathname === '/') {
+            } else if (linkPath !== '/' && currentPath.startsWith(linkPath)) {
                 link.parentElement.classList.add('active');
             } else {
                 link.parentElement.classList.remove('active');
