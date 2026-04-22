@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Portal DITEC{% endblock %}</title>
+    <title>{% block title %}Portal DISEC{% endblock %}</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -18,26 +18,29 @@
         <nav id="sidebar">
             <div class="sidebar-header">
                 <img src="{{ url_for('static', filename='assets/img/bb-logo.png') }}" alt="Logo BB" class="logo-bb">
-                <span class="brand-text">Portal DITEC</span>
+                <span class="brand-text">Portal DISEC</span>
             </div>
 
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="{{ url_for('index') }}"><i class="fas fa-home"></i> <span class="link-text">Início</span></a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ url_for('dashboard') }}"><i class="fas fa-chart-line"></i> <span class="link-text">Dashboard Geral</span></a>
+                </li>
+
                 <li class="nav-item">
                     <a href="{{ url_for('agencias') }}"><i class="fas fa-search-location"></i> <span class="link-text">Consulta Nacional</span></a>
                 </li>
+
                 <li class="nav-item">
                     <a href="{{ url_for('detalhes', prefixo='0001') }}"><i class="fas fa-info-circle"></i> <span class="link-text">Informações Técnicas</span></a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('dashboard') }}"><i class="fas fa-chart-line"></i> <span class="link-text">Dashboard Geral</span></a>
                 </li>
                 
                 {% if user_level == 'Gestão' %}
                 <li class="nav-item admin-section">
-                    <a href="{{ url_for('admin') }}"><i class="fas fa-user-shield"></i> <span class="link-text">Gestão DITEC</span></a>
+                    <a href="{{ url_for('admin') }}"><i class="fas fa-user-shield"></i> <span class="link-text">Gestão DISEC</span></a>
                 </li>
                 {% endif %}
 

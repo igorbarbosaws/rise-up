@@ -1,59 +1,94 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
 
-    <div class="stats-grid mb-4">
-        <div class="stat-card border-left-reforma">
-            <p class="text-label">Agências em Reforma</p>
-            <div class="d-flex align-items-center">
-                <span class="value">{{ stats.em_reforma }}</span>
-                <span class="badge-status ms-2">Prioritário</span>
-            </div>
-        </div>
-        <div class="stat-card border-left-energia">
-            <p class="text-label">Consumo de Energia (Mês)</p>
-            <div class="value">1.240 <small>kWh</small></div>
-            <span class="trend-down">▼ 4.2% <small>vs mês ant.</small></span>
-        </div>
-        <div class="stat-card border-left-agua">
-            <p class="text-label">Consumo de Água (Mês)</p>
-            <div class="value">42 <small>m³</small></div>
-            <span class="trend-up">▲ 1.5% <small>vs meta</small></span>
-        </div>
-        <div class="stat-card border-left-carbono">
-            <p class="text-label">Créditos de Carbono</p>
-            <div class="value">94%</div>
-            <span class="text-success fw-bold">Meta Atingida</span>
+{% block content %}
+<div class="welcome-section">
+    <div class="welcome-text">
+        <h1>Dashboard Estratégico</h1>
+        <p>Acompanhe em tempo real os indicadores de infraestrutura e sustentabilidade do <strong>Portal DISEC</strong>.</p>
+    </div>
+</div>
+
+<div class="dashboard-preview-row mb-4">
+    <div class="stat-mini-card">
+        <div class="stat-icon yellow"><i class="fas fa-tools"></i></div>
+        <div class="stat-data">
+            <span class="stat-value">{{ stats.em_reforma if stats else '124' }}</span>
+            <span class="stat-label">Agências em Reforma</span>
         </div>
     </div>
+    <div class="stat-mini-card">
+        <div class="stat-icon blue"><i class="fas fa-bolt"></i></div>
+        <div class="stat-data">
+            <span class="stat-value">1.240 <small style="font-size: 0.6em;">kWh</small></span>
+            <span class="stat-label">Consumo Energia (Mês)</span>
+        </div>
+    </div>
+    <div class="stat-mini-card">
+        <div class="stat-icon green"><i class="fas fa-tint"></i></div>
+        <div class="stat-data">
+            <span class="stat-value">42 <small style="font-size: 0.6em;">m³</small></span>
+            <span class="stat-label">Consumo de Água</span>
+        </div>
+    </div>
+    <div class="stat-mini-card">
+        <div class="stat-icon purple"><i class="fas fa-leaf"></i></div>
+        <div class="stat-data">
+            <span class="stat-value">94%</span>
+            <span class="stat-label">Meta ESG Alcançada</span>
+        </div>
+    </div>
+</div>
 
-    <div class="main-dashboard-content">
+<div class="main-dashboard-content">
+    <div class="chart-box main-chart">
+        <div class="box-header">
+            <h3><i class="fas fa-map-marked-alt"></i> Distribuição Geográfica de Reformas</h3>
+            <p>Visualização de obras prioritárias por região</p>
+        </div>
+        <div id="map-container" class="map-render"></div>
+    </div>
+
+    <div class="side-charts">
         <div class="chart-box">
-            <div class="box-header mb-3">
-                <h5 class="fw-bold"><i class="fas fa-map-marked-alt me-2"></i>Distribuição de Reformas por Região</h5>
+            <div class="box-header">
+                <h3>Eficiência Energética</h3>
+                <p>Consumo por Região (Ranking)</p>
             </div>
-            <div id="map-container" class="map-render"></div>
+            <div class="efficiency-rank">
+                <div class="rank-item">
+                    <span class="region">Nordeste</span>
+                    <div class="progress-container"><div class="progress-bar bar-100"></div></div>
+                    <span class="value">1.2M</span>
+                </div>
+                <div class="rank-item">
+                    <span class="region">Sudeste</span>
+                    <div class="progress-container"><div class="progress-bar bar-85"></div></div>
+                    <span class="value">2.5M</span>
+                </div>
+                <div class="rank-item">
+                    <span class="region">Sul</span>
+                    <div class="progress-container"><div class="progress-bar bar-70"></div></div>
+                    <span class="value">3.1M</span>
+                </div>
+                <div class="rank-item">
+                    <span class="region">Centro-Oeste</span>
+                    <div class="progress-container"><div class="progress-bar bar-55"></div></div>
+                    <span class="value">4.2M</span>
+                </div>
+            </div>
         </div>
 
         <div class="chart-box">
-            <div class="box-header mb-3">
-                <h5 class="fw-bold">Eficiência Energética por Região</h5>
+            <div class="box-header">
+                <h3>Tendência Global</h3>
+                <p>Evolução do consumo (Últimos 4 meses)</p>
             </div>
-            <div class="efficiency-rank mb-4">
-                <div class="rank-bar rank-a bar-100">Nordeste - 1.2M kWh</div>
-                <div class="rank-bar rank-b bar-85">Sudeste - 2.5M kWh</div>
-                <div class="rank-bar rank-c bar-70">Sul - 3.1M kWh</div>
-                <div class="rank-bar rank-d bar-55">Centro-Oeste - 4.2M kWh</div>
-                <div class="rank-bar rank-e bar-40">Norte - 5.8M kWh</div>
-            </div>
-            
-            <hr>
-            
-            <div class="mt-4">
-                <h5 class="fw-bold">Tendência de Consumo Global</h5>
-                <canvas id="trendChart" class="chart-render"></canvas>
-            </div>
+            <canvas id="trendChart" class="chart-render"></canvas>
         </div>
     </div>
 </div>
@@ -66,14 +101,13 @@
         const { Map } = await google.maps.importLibrary("maps");
         const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
-        const brasilCentro = { lat: -15.7801, lng: -47.9292 };
+        const brasilCentro = { lat: -14.2350, lng: -51.9253 };
         
         const mapStyle = [
             { "elementType": "geometry", "stylers": [{ "color": "#f5f5f5" }] },
             { "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] },
-            { "featureType": "administrative.country", "elementType": "geometry.stroke", "stylers": [{ "color": "#004481" }, { "weight": 1.5 }] },
-            { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#e9e9e9" }] },
-            { "featureType": "road", "stylers": [{ "visibility": "off" }] }
+            { "featureType": "administrative.country", "elementType": "geometry.stroke", "stylers": [{ "color": "#0038A8" }, { "weight": 1 }] },
+            { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#e0e6ed" }] }
         ];
 
         const map = new Map(document.getElementById("map-container"), {
@@ -81,18 +115,18 @@
             center: brasilCentro,
             styles: mapStyle,
             disableDefaultUI: true,
-            mapId: "DEMO_MAP_ID" 
+            mapId: "DISEC_DASHBOARD_MAP" 
         });
 
         const locais = [
-            { pos: { lat: -8.05, lng: -34.88 }, label: "15", nome: "Recife" },
-            { pos: { lat: -23.55, lng: -46.63 }, label: "22", nome: "São Paulo" },
-            { pos: { lat: -15.79, lng: -47.88 }, label: "08", nome: "Brasília" }
+            { pos: { lat: -8.0578, lng: -34.8829 }, label: "15", nome: "Recife - Superintendência" },
+            { pos: { lat: -23.5505, lng: -46.6333 }, label: "22", nome: "São Paulo - Polo Operacional" },
+            { pos: { lat: -15.7942, lng: -47.8822 }, label: "08", nome: "Brasília - Sede" }
         ];
 
         locais.forEach(local => {
             const pinCustomizado = new PinElement({
-                background: "#004481",
+                background: "#0038A8",
                 glyph: local.label,
                 glyphColor: "white",
                 borderColor: "white",
@@ -107,6 +141,7 @@
         });
     }
 
+    // Gráfico de Tendência
     const ctx = document.getElementById('trendChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
@@ -115,19 +150,20 @@
             datasets: [{
                 label: 'Consumo Global',
                 data: [1300, 1250, 1280, 1240],
-                borderColor: '#004481',
-                backgroundColor: 'rgba(0, 68, 129, 0.05)',
+                borderColor: '#0038A8',
+                backgroundColor: 'rgba(0, 56, 168, 0.1)',
                 fill: true,
                 tension: 0.4,
-                pointRadius: 5,
-                pointBackgroundColor: '#004481'
+                pointRadius: 4,
+                borderWidth: 3
             }]
         },
         options: { 
             responsive: true,
+            maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: { 
-                y: { grid: { display: false } },
+                y: { display: false },
                 x: { grid: { display: false } }
             }
         }

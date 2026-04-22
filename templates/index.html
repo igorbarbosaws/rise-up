@@ -1,12 +1,58 @@
 {% extends "base.html" %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="welcome-section">
-    <h1>Olá, {{ user_name }}</h1>
-    <p>Seja bem-vindo ao <strong>Portal DITEC</strong>. Selecione um módulo abaixo para começar.</p>
+    <div class="welcome-text">
+        <h1>Olá, {{ user_name }}</h1>
+        <p>Seja bem-vindo ao <strong>Portal DISEC</strong>. Aqui estão os principais indicadores e acessos rápidos para sua gestão.</p>
+    </div>
+</div>
+
+<div class="dashboard-preview-row">
+    <div class="stat-mini-card">
+        <div class="stat-icon blue"><i class="fas fa-building"></i></div>
+        <div class="stat-data">
+            <span class="stat-value">4.973</span>
+            <span class="stat-label">Unidades Totais</span>
+        </div>
+    </div>
+    <div class="stat-mini-card">
+        <div class="stat-icon yellow"><i class="fas fa-tools"></i></div>
+        <div class="stat-data">
+            <span class="stat-value">124</span>
+            <span class="stat-label">Agências em Reforma</span>
+        </div>
+    </div>
+    <div class="stat-mini-card">
+        <div class="stat-icon green"><i class="fas fa-leaf"></i></div>
+        <div class="stat-data">
+            <span class="stat-value">94%</span>
+            <span class="stat-label">Meta ESG Alcançada</span>
+        </div>
+    </div>
+    <div class="stat-mini-card">
+        <div class="stat-icon purple"><i class="fas fa-headset"></i></div>
+        <div class="stat-data">
+            <span class="stat-value">08</span>
+            <span class="stat-label">Chamados Pendentes</span>
+        </div>
+    </div>
 </div>
 
 <div class="cards-grid">
+    <div class="info-card">
+        <div class="card-content">
+            <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>Dashboard Geral</h3>
+            <p>Visualize indicadores estratégicos, metas de sustentabilidade e a evolução das obras em tempo real em todo o país.</p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn-card">Ver Indicadores</a>
+    </div>
+
     <div class="info-card">
         <div class="card-content">
             <div class="card-icon"><i class="fas fa-map-marked-alt"></i></div>
@@ -21,9 +67,9 @@
         <div class="card-content">
             <div class="card-icon"><i class="fas fa-user-shield"></i></div>
             <h3>Gestão de Dados</h3>
-            <p>Acesso de <strong>Gestor</strong> liberado. Você pode incluir, editar ou remover registros de agências da base central.</p>
+            <p>Acesso de <strong>Gestor</strong> liberado. Você pode incluir, editar ou remover registros de agências e usuários da base central DISEC.</p>
         </div>
-        <a href="/admin" class="btn-card" style="background: #856404;">Gerenciar Base</a>
+        <a href="/admin" class="btn-card" style="background: #0038A8;">Gerenciar Base</a>
     </div>
     {% endif %}
 
@@ -31,7 +77,7 @@
         <div class="card-content">
             <div class="card-icon"><i class="fas fa-headset"></i></div>
             <h3>Suporte Técnico</h3>
-            <p>Precisa de ajuda com o sistema ou quer solicitar novas permissões? Abra um chamado diretamente com a equipe DITEC.</p>
+            <p>Precisa de ajuda com o sistema ou quer solicitar novas permissões? Abra um chamado diretamente com a equipe técnica da DISEC.</p>
         </div>
         <a href="#" class="btn-card" style="background: #555;">Abrir Chamado</a>
     </div>
