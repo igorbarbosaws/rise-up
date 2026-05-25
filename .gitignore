@@ -34,3 +34,6 @@ instance/
 # Banco de dados — não versionar (cada ambiente tem o seu)
 
 
+*.db
+*.sqlite
+*.sqlite3

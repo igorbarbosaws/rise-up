@@ -383,6 +383,7 @@
                     <th style="text-align:right;">Consumo Ref. (kWh/m²·ano)</th>
                     <th style="text-align:center;">Agências</th>
                     <th style="text-align:center;">IDI Médio</th>
+                    <th style="text-align:center;">Efic. Energética</th>
                     <th style="text-align:center;">Distribuição</th>
                 </tr>
             </thead>
@@ -390,7 +391,10 @@
             {% set max_zona_total = stats.zonas_lista | map(attribute='total') | max %}
             {% set zona_cores = ['#0038A8','#1e40af','#2563eb','#3b82f6','#0891b2','#0d9488','#16a34a','#65a30d'] %}
             {% for z in stats.zonas_lista %}
-            <tr>
+            {# Calcula eficiência média anual da zona para comparar com o limite #}
+            {% set efic_media_anual = (z.efic_media * 12) | round(1) if z.efic_media is defined and z.efic_media is not none else none %}
+            {% set zona_acima = (efic_media_anual is not none and efic_media_anual > z.consumo_ref) %}
+            <tr {% if zona_acima %}style="background:#fff7ed;"{% endif %}>
                 <td style="text-align:center;">
                     <span style="display:inline-flex;align-items:center;justify-content:center;
                                  width:28px;height:28px;border-radius:50%;font-weight:800;font-size:.82rem;
@@ -398,7 +402,17 @@
                         {{ z.zona }}
                     </span>
                 </td>
-                <td style="font-size:.85rem;">{{ z.descricao }}</td>
+                <td style="font-size:.85rem;">
+                    {{ z.descricao }}
+                    {% if zona_acima %}
+                    <span title="Eficiência média da zona acima do limite NBR 15220"
+                          style="display:inline-flex;align-items:center;gap:3px;
+                                 background:#fed7aa;color:#9a3412;font-size:.7rem;font-weight:700;
+                                 padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:middle;">
+                        <i class="fas fa-exclamation-triangle"></i> Acima do limite
+                    </span>
+                    {% endif %}
+                </td>
                 <td style="text-align:right;font-weight:600;color:var(--text-muted);font-size:.82rem;">
                     ~ {{ z.consumo_ref }}
                 </td>
@@ -409,6 +423,23 @@
                                  background:{% if z.idi_medio < 2 %}#fee2e2;color:#991b1b{% elif z.idi_medio < 3 %}#fef3c7;color:#92400e{% else %}#dcfce7;color:#166534{% endif %};">
                         {{ z.idi_medio }}
                     </span>
+                    {% else %}
+                    <span style="color:var(--text-muted);font-size:.8rem;">—</span>
+                    {% endif %}
+                </td>
+                <td style="text-align:center;">
+                    {% if efic_media_anual is not none %}
+                    <span style="display:inline-flex;align-items:center;gap:4px;
+                                 padding:2px 10px;border-radius:12px;font-weight:700;font-size:.8rem;
+                                 {% if zona_acima %}background:#fee2e2;color:#991b1b;{% else %}background:#dcfce7;color:#166534;{% endif %}">
+                        <i class="fas {% if zona_acima %}fa-arrow-up{% else %}fa-check{% endif %}"></i>
+                        {{ efic_media_anual }} kWh/m²·ano
+                    </span>
+                    {% if zona_acima %}
+                    <div style="font-size:.7rem;color:#c2410c;margin-top:2px;">
+                        +{{ ((efic_media_anual - z.consumo_ref) / z.consumo_ref * 100) | round(1) }}% acima
+                    </div>
+                    {% endif %}
                     {% else %}
                     <span style="color:var(--text-muted);font-size:.8rem;">—</span>
                     {% endif %}

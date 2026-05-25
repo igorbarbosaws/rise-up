@@ -201,6 +201,30 @@
                 </p>
                 {% endif %}
 
+                {# ── Cálculo de alerta de eficiência energética ──────────────────── #}
+                {% set efic_mensal = agencia.eficiencia_energetica if agencia.eficiencia_energetica is not none
+                                     else ((agencia.consumo_energia / agencia.area_util) | round(2)
+                                           if agencia.consumo_energia and agencia.area_util else none) %}
+                {% set limite_zona = agencia.zona_bioclimatica_consumo_ref %}
+                {% set acima_limite = (efic_mensal is not none and limite_zona is not none and efic_mensal > limite_zona) %}
+
+                {# ── Banner de alerta quando acima do limite ──────────────────────── #}
+                {% if acima_limite %}
+                <div class="efic-alerta-banner" role="alert">
+                    <div class="efic-alerta-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="efic-alerta-body">
+                        <strong>Consumo acima do limite da Zona {{ agencia.zona_bioclimatica }}</strong>
+                        <span>
+                            Eficiência mensal: <strong>{{ efic_mensal }} kWh/m²/mês</strong>
+                            — Limite NBR 15220: <strong>{{ limite_zona }} kWh/m²/mês</strong>
+                            <span class="efic-alerta-excesso">
+                                (+{{ ((efic_mensal - limite_zona) / limite_zona * 100) | round(1) }}% acima)
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+
                 <table class="info-table" style="margin-bottom:16px;">
                     <tr>
                         <td><i class="fas fa-ruler-combined"></i> Área Útil:</td>
@@ -252,7 +276,7 @@
                             — {{ agencia.zona_bioclimatica_descricao }}
                             <br>
                             <small class="text-muted">
-                                Consumo máx. referência: {{ agencia.zona_bioclimatica_consumo_ref }} kWh/m²·ano
+                                Consumo máx. referência: {{ limite_zona }} kWh/m²/mês
                             </small>
                             {% else %}
                             <em class="text-muted">Não informada</em>
@@ -671,7 +695,7 @@
                            value="{{ agencia.area_util or '' }}">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Eficiência Energética (kWh/m²)</label>
+                    <label class="form-label">Eficiência Energética (kWh/m²·mês)</label>
                     <div class="form-input" style="background:#f8fafc;color:var(--text-muted);cursor:default;display:flex;align-items:center;gap:8px;">
                         <i class="fas fa-calculator" style="color:var(--bb-blue);"></i>
                         <span>
@@ -856,6 +880,69 @@ async function salvarEdicao(e) {
 
 {% block extra_css %}
 <style>
+/* ── Alerta de eficiência energética ─────────────────────────────── */
+.efic-alerta-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #fff7ed;
+    border: 1.5px solid #f97316;
+    border-left: 5px solid #f97316;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    animation: efic-pulse 2.5s ease-in-out infinite;
+}
+@keyframes efic-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,.0); }
+    50%       { box-shadow: 0 0 0 4px rgba(249,115,22,.18); }
+}
+.efic-alerta-icon {
+    font-size: 1.25rem;
+    color: #f97316;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.efic-alerta-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: .85rem;
+    color: #7c2d12;
+    line-height: 1.5;
+}
+.efic-alerta-body strong { color: #c2410c; }
+.efic-alerta-excesso {
+    display: inline-block;
+    background: #fed7aa;
+    color: #9a3412;
+    font-weight: 700;
+    font-size: .78rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 4px;
+}
+
+/* ── Indicador inline de eficiência ──────────────────────────────── */
+.efic-valor {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 700;
+    font-size: .9rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+.efic-valor small { font-weight: 400; font-size: .75rem; margin-left: 1px; }
+.efic-acima {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.efic-ok {
+    background: #dcfce7;
+    color: #166534;
+}
+
 .detalhes-search-bar {
     position: relative;
     margin-bottom: 24px;

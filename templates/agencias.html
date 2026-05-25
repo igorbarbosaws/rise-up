@@ -146,11 +146,12 @@
                             <th>Segmento</th>
                             <th>Classificação BACEN</th>
                             <th>Status</th>
+                            <th style="text-align:center;">Efic. Energética</th>
                             <th>Ação</th>
                         </tr>
                     </thead>
                     <tbody id="table-body">
-                        <tr><td colspan="7" class="text-center text-muted">Carregando...</td></tr>
+                        <tr><td colspan="8" class="text-center text-muted">Carregando...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -323,10 +324,39 @@
     function renderTabela(agencias) {
         const tbody = document.getElementById('table-body');
         if (!agencias.length) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Nenhuma agência encontrada.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Nenhuma agência encontrada.</td></tr>';
             return;
         }
-        tbody.innerHTML = agencias.map(ag => `
+        tbody.innerHTML = agencias.map(ag => {
+            // Calcula eficiência anual e verifica limite da zona
+            let eficBadge = '<span style="color:var(--text-muted);font-size:.8rem;">—</span>';
+            if (ag.eficiencia_energetica != null || (ag.consumo_energia && ag.area_util)) {
+                const eficMensal = ag.eficiencia_energetica != null
+                    ? ag.eficiencia_energetica
+                    : Math.round((ag.consumo_energia / ag.area_util) * 100) / 100;
+                const eficAnual = Math.round(eficMensal * 12 * 10) / 10;
+                const limiteZona = ag.zona_bioclimatica_consumo_ref;
+                if (limiteZona != null) {
+                    const acima = eficAnual > limiteZona;
+                    const pct   = Math.round((eficAnual - limiteZona) / limiteZona * 1000) / 10;
+                    eficBadge = acima
+                        ? `<span style="display:inline-flex;align-items:center;gap:4px;
+                                        background:#fee2e2;color:#991b1b;font-weight:700;font-size:.78rem;
+                                        padding:2px 8px;border-radius:10px;"
+                                 title="Eficiência anual: ${eficAnual} kWh/m²·ano — Limite Zona ${ag.zona_bioclimatica}: ${limiteZona} kWh/m²·ano">
+                               <i class="fas fa-exclamation-triangle"></i> ${eficAnual} (+${pct}%)
+                           </span>`
+                        : `<span style="display:inline-flex;align-items:center;gap:4px;
+                                        background:#dcfce7;color:#166534;font-weight:600;font-size:.78rem;
+                                        padding:2px 8px;border-radius:10px;"
+                                 title="Eficiência anual: ${eficAnual} kWh/m²·ano — Limite Zona ${ag.zona_bioclimatica}: ${limiteZona} kWh/m²·ano">
+                               <i class="fas fa-check"></i> ${eficAnual}
+                           </span>`;
+                } else {
+                    eficBadge = `<span style="font-size:.8rem;color:var(--text-muted);">${eficAnual} kWh/m²·ano</span>`;
+                }
+            }
+            return `
             <tr>
                 <td class="fw-bold">${ag.prefixo}</td>
                 <td>${ag.nome}</td>
@@ -334,6 +364,7 @@
                 <td>${ag.segmento || '-'}</td>
                 <td>${ag.classificacao_bacen || 'Não classificada'}</td>
                 <td><span class="badge ${badgeStatus(ag.status)}">${ag.status || '-'}</span></td>
+                <td style="text-align:center;">${eficBadge}</td>
                 <td>
                     <a href="/detalhes/${ag.prefixo}" class="btn btn-primary"
                        style="padding:6px 14px;font-size:.8rem;">
@@ -341,7 +372,7 @@
                     </a>
                 </td>
             </tr>
-        `).join('');
+        `}).join('');
     }
 
     function renderMapa(agencias) {

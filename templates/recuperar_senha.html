@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha | Portal DISEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body class="login-page">
+    <div class="login-wrapper">
+        <div class="login-card">
+            <img src="{{ url_for('static', filename='assets/img/bb-logo.png') }}"
+                 alt="Banco do Brasil" class="login-logo">
+            <h1 class="portal-title">Portal DISEC</h1>
+            <p class="login-subtitle">Recuperação de Senha</p>
+
+            {% if erro %}
+            <div style="text-align:center;color:#c0392b;margin-bottom:20px;">
+                <i class="fas fa-exclamation-triangle" style="font-size:2.5rem;margin-bottom:12px;display:block;"></i>
+                <p style="font-weight:600;">{{ erro }}</p>
+                <a href="{{ url_for('recuperar_senha') }}" class="btn-login"
+                   style="display:block;text-align:center;text-decoration:none;margin-top:20px;padding:15px;">
+                    Tentar novamente
+                </a>
+            </div>
+
+            {% elif enviado %}
+            <div style="background:rgba(0,56,168,0.08);border:2px solid #0038A8;border-radius:12px;
+                        padding:24px;text-align:center;color:#0038A8;">
+                <i class="fas fa-envelope-open-text" style="font-size:2.5rem;margin-bottom:12px;display:block;"></i>
+                <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:8px;">Verifique seu e-mail</h3>
+                <p style="font-size:0.88rem;opacity:0.85;line-height:1.5;">{{ mensagem }}</p>
+            </div>
+            <a href="{{ url_for('login') }}" class="btn-login"
+               style="display:block;text-align:center;text-decoration:none;margin-top:20px;padding:15px;">
+                Voltar ao Login
+            </a>
+
+            {% else %}
+            <p style="color:#555;font-size:0.88rem;text-align:center;margin-bottom:24px;line-height:1.5;">
+                Informe o e-mail cadastrado na sua conta e enviaremos um link para redefinir sua senha.
+            </p>
+
+            <form method="POST" action="{{ url_for('recuperar_senha') }}" novalidate>
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+                    <div class="input-field">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email" id="email" name="email"
+                               placeholder="seu.email@bb.com.br" required autocomplete="email">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-paper-plane" style="margin-right:8px;"></i>Enviar link de recuperação
+                </button>
+            </form>
+
+            <div class="login-options" style="margin-top:20px;text-align:center;">
+                <a href="{{ url_for('login') }}" class="option-link">
+                    <i class="fas fa-arrow-left" style="margin-right:4px;"></i>Voltar ao Login
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <footer class="login-footer">
+            <p>© 2026 Banco do Brasil S.A. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+</body>
+</html>

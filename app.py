@@ -72,6 +72,8 @@ class Usuario(db.Model):
     nivel      = db.Column(db.String(20),  nullable=False, default='Consulta')
     ativo      = db.Column(db.Boolean, default=True)
     criado_em  = db.Column(db.DateTime, default=datetime.utcnow)
+    reset_token        = db.Column(db.String(64), unique=True, nullable=True)
+    reset_token_expira = db.Column(db.DateTime, nullable=True)
 
     def set_senha(self, senha):
         self.senha_hash = generate_password_hash(senha)
@@ -288,7 +290,14 @@ def enviar_email(destinatario, assunto, corpo_html):
             smtp.starttls()
             smtp.login(cfg['user'], cfg['password'])
             smtp.sendmail(cfg['from'], [destinatario], msg.as_string())
+        app.logger.info(f'E-mail enviado com sucesso para {destinatario} — assunto: {assunto}')
         return True
+    except smtplib.SMTPAuthenticationError as exc:
+        app.logger.error(f'Falha de autenticação SMTP ao enviar para {destinatario}: {exc}')
+        return False
+    except smtplib.SMTPRecipientsRefused as exc:
+        app.logger.error(f'Destinatário recusado pelo servidor SMTP ({destinatario}): {exc}')
+        return False
     except Exception as exc:
         app.logger.error(f'Erro ao enviar e-mail para {destinatario}: {exc}')
         return False
@@ -413,6 +422,29 @@ def email_boas_vindas(usuario, senha_temporaria):
     enviar_email(usuario.email, '[DISEC] Suas credenciais de acesso', corpo)
 
 
+def email_recuperacao_senha(usuario, link_redefinir):
+    """Envia e-mail com link para redefinição de senha."""
+    corpo = f"""
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+      <div style="background:#0038A8;padding:24px;border-radius:8px 8px 0 0;">
+        <h2 style="color:#FCF000;margin:0;">Portal DISEC — Redefinição de Senha</h2>
+      </div>
+      <div style="background:#f9f9f9;padding:24px;border:1px solid #e0e0e0;border-radius:0 0 8px 8px;">
+        <p style="color:#333;">Olá, <strong>{usuario.nome}</strong>!</p>
+        <p style="color:#333;">Recebemos uma solicitação para redefinir a senha da sua conta no <strong>Portal DISEC</strong>.</p>
+        <p style="color:#333;">Clique no botão abaixo para criar uma nova senha. O link é válido por <strong>1 hora</strong>.</p>
+        <a href="{link_redefinir}" style="display:inline-block;background:#0038A8;color:#FCF000;
+           padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:bold;margin:16px 0;">
+          Redefinir Minha Senha
+        </a>
+        <p style="color:#888;font-size:0.85rem;">Se você não solicitou a redefinição de senha, ignore este e-mail. Sua senha permanece a mesma.</p>
+        <p style="color:#aaa;font-size:0.8rem;">Link: {link_redefinir}</p>
+      </div>
+    </div>
+    """
+    enviar_email(usuario.email, '[DISEC] Redefinição de senha', corpo)
+
+
 def calcular_eficiencia_energetica(consumo_energia, area_util):
     """Calcula eficiência energética mensal em kWh/m².
     Retorna round(consumo / area, 2) ou None se area_util for zero/None.
@@ -426,8 +458,8 @@ def calcular_idi_por_zona(consumo_energia, area_util, zona_bioclimatica):
     """Calcula IDI contínuo (1.0–5.0) ajustado pela zona bioclimática.
 
     Fórmula:
-      efic_anual = (consumo_energia * 12) / area_util   [kWh/m²·ano]
-      ratio      = efic_anual / consumo_ref_zona
+      efic_mensal = consumo_energia / area_util   [kWh/m²·mês]
+      ratio       = efic_mensal / consumo_ref_zona
 
     Mapeamento linear contínuo por faixa de ratio:
       ratio <= 0.00  → IDI 5.0
@@ -444,8 +476,8 @@ def calcular_idi_por_zona(consumo_energia, area_util, zona_bioclimatica):
     zona = ZONAS_BIOCLIMATICAS.get(zona_bioclimatica)
     if not zona:
         return None
-    efic_anual = (consumo_energia * 12) / area_util
-    ratio      = efic_anual / zona['consumo_ref']
+    efic_mensal = consumo_energia / area_util
+    ratio       = efic_mensal / zona['consumo_ref']
 
     if ratio >= 1.00:
         idi = 1.0
@@ -692,7 +724,7 @@ def get_stats():
         for a in top_energia_lista
     ]
 
-    # Distribuição por zona bioclimática com IDI médio por zona
+    # Distribuição por zona bioclimática com IDI médio e eficiência média por zona
     zona_dist = {}
     for a in agencias:
         z = a.zona_bioclimatica
@@ -704,16 +736,25 @@ def get_stats():
                     'consumo_ref': ZONAS_BIOCLIMATICAS[z]['consumo_ref'],
                     'total':       0,
                     'idi_vals':    [],
+                    'efic_vals':   [],
                 }
             zona_dist[z]['total'] += 1
             if a.idi is not None:
                 zona_dist[z]['idi_vals'].append(a.idi)
+            # Eficiência mensal: usa campo calculado ou deriva de consumo/área
+            efic_mensal = a.eficiencia_energetica
+            if efic_mensal is None and a.consumo_energia and a.area_util:
+                efic_mensal = round(a.consumo_energia / a.area_util, 2)
+            if efic_mensal is not None:
+                zona_dist[z]['efic_vals'].append(efic_mensal)
 
     zonas_lista = []
     for z_num in sorted(zona_dist.keys()):
         entry = zona_dist[z_num]
-        idi_vals = entry.pop('idi_vals')
-        entry['idi_medio'] = round(sum(idi_vals) / len(idi_vals), 2) if idi_vals else None
+        idi_vals  = entry.pop('idi_vals')
+        efic_vals = entry.pop('efic_vals')
+        entry['idi_medio']  = round(sum(idi_vals)  / len(idi_vals),  2) if idi_vals  else None
+        entry['efic_media'] = round(sum(efic_vals) / len(efic_vals), 2) if efic_vals else None
         zonas_lista.append(entry)
 
     sem_zona = sum(1 for a in agencias if not a.zona_bioclimatica)
@@ -1600,10 +1641,10 @@ def api_solicitacao_aprovar(sol_id):
     sol.resolvido_em = datetime.utcnow()
     db.session.commit()
 
-    link = f"{_base_url()}/definir-senha/{token}"
-    email_aprovacao(sol, link)
+    link         = f"{_base_url()}/definir-senha/{token}"
+    email_ok     = email_aprovacao(sol, link)
 
-    return jsonify({'ok': True, 'link': link})
+    return jsonify({'ok': True, 'link': link, 'email_enviado': email_ok})
 
 
 @app.route('/api/solicitacoes/<int:sol_id>/rejeitar', methods=['POST'])
@@ -1638,10 +1679,73 @@ def api_solicitacao_reenviar(sol_id):
     sol.token_expira = datetime.utcnow() + timedelta(hours=24)
     db.session.commit()
 
-    link = f"{_base_url()}/definir-senha/{token}"
-    email_aprovacao(sol, link)
+    link         = f"{_base_url()}/definir-senha/{token}"
+    email_ok     = email_aprovacao(sol, link)
 
-    return jsonify({'ok': True, 'link': link})
+    return jsonify({'ok': True, 'link': link, 'email_enviado': email_ok})
+
+
+# ── Recuperação de senha ───────────────────────────────────────────────────────
+
+@app.route('/recuperar-senha', methods=['GET', 'POST'])
+def recuperar_senha():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        usuario = Usuario.query.filter(
+            db.func.lower(Usuario.email) == email
+        ).first()
+
+        # Sempre exibe a mesma mensagem para não revelar se o e-mail existe
+        mensagem = 'Se este e-mail estiver cadastrado, você receberá um link em instantes.'
+
+        if usuario and usuario.ativo:
+            token = uuid.uuid4().hex + uuid.uuid4().hex
+            usuario.reset_token        = token
+            usuario.reset_token_expira = datetime.utcnow() + timedelta(hours=1)
+            db.session.commit()
+
+            link = f"{_base_url()}/redefinir-senha/{token}"
+            email_recuperacao_senha(usuario, link)
+
+        return render_template('recuperar_senha.html', enviado=True, mensagem=mensagem)
+
+    return render_template('recuperar_senha.html')
+
+
+@app.route('/redefinir-senha/<token>', methods=['GET', 'POST'])
+def redefinir_senha(token):
+    usuario = Usuario.query.filter_by(reset_token=token).first()
+
+    if not usuario:
+        return render_template('recuperar_senha.html',
+                               erro='Link inválido ou já utilizado.')
+
+    if usuario.reset_token_expira and datetime.utcnow() > usuario.reset_token_expira:
+        usuario.reset_token        = None
+        usuario.reset_token_expira = None
+        db.session.commit()
+        return render_template('recuperar_senha.html',
+                               erro='Este link expirou. Solicite uma nova recuperação de senha.')
+
+    if request.method == 'POST':
+        senha    = request.form.get('senha', '')
+        confirma = request.form.get('confirma', '')
+
+        if len(senha) < 6:
+            return render_template('redefinir_senha.html', token=token,
+                                   erro='A senha deve ter pelo menos 6 caracteres.')
+        if senha != confirma:
+            return render_template('redefinir_senha.html', token=token,
+                                   erro='As senhas não coincidem.')
+
+        usuario.set_senha(senha)
+        usuario.reset_token        = None
+        usuario.reset_token_expira = None
+        db.session.commit()
+
+        return render_template('redefinir_senha.html', concluido=True)
+
+    return render_template('redefinir_senha.html', token=token, nome=usuario.nome)
 
 
 @app.errorhandler(403)
