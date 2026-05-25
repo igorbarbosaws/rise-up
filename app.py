@@ -924,7 +924,12 @@ def api_agencias_criar():
         return jsonify({'erro': 'Zona bioclimática inválida. Use um valor entre 1 e 8.'}), 400
 
     eficiencia_energetica = calcular_eficiencia_energetica(consumo_energia, area_util)
-    idi = calcular_idi_por_zona(consumo_energia, area_util, zona_bioclimatica)
+
+    # IDI é informado manualmente pela engenharia — não é calculado automaticamente
+    idi_raw = data.get('idi')
+    idi = float(idi_raw) if idi_raw not in (None, '') else None
+    if idi is not None and not validar_idi(idi):
+        return jsonify({'erro': 'IDI inválido. Informe um valor entre 1,0 e 5,0.'}), 400
 
     ag = Agencia(
         prefixo=prefixo, nome=nome, municipio=municipio, uf=uf,
@@ -1005,9 +1010,16 @@ def api_agencias_editar(agencia_id):
     if 'classificacao_bacen' in data:
         ag.classificacao_bacen = str(data['classificacao_bacen']).strip() or None
 
-    # Recalcula eficiência energética e IDI automaticamente pela zona bioclimática
+    # IDI é informado manualmente pela engenharia — não é recalculado automaticamente
+    if 'idi' in data:
+        idi_raw = data['idi']
+        idi = float(idi_raw) if idi_raw not in (None, '') else None
+        if idi is not None and not validar_idi(idi):
+            return jsonify({'erro': 'IDI inválido. Informe um valor entre 1,0 e 5,0.'}), 400
+        ag.idi = idi
+
+    # Recalcula apenas eficiência energética automaticamente
     ag.eficiencia_energetica = calcular_eficiencia_energetica(ag.consumo_energia, ag.area_util)
-    ag.idi = calcular_idi_por_zona(ag.consumo_energia, ag.area_util, ag.zona_bioclimatica)
 
     ag.atualizado_em = datetime.utcnow()
     db.session.commit()
@@ -1026,15 +1038,13 @@ def api_agencias_deletar(agencia_id):
 @app.route('/api/admin/recalcular-eficiencia', methods=['POST'])
 @gestao_required
 def api_recalcular_eficiencia():
-    """Recalcula eficiência energética e IDI de todas as agências com os dados disponíveis."""
+    """Recalcula eficiência energética de todas as agências. O IDI não é alterado (informado manualmente)."""
     agencias = Agencia.query.all()
     atualizadas = 0
     for ag in agencias:
         nova_efic = calcular_eficiencia_energetica(ag.consumo_energia, ag.area_util)
-        novo_idi  = calcular_idi_por_zona(ag.consumo_energia, ag.area_util, ag.zona_bioclimatica)
-        if nova_efic != ag.eficiencia_energetica or novo_idi != ag.idi:
+        if nova_efic != ag.eficiencia_energetica:
             ag.eficiencia_energetica = nova_efic
-            ag.idi = novo_idi
             atualizadas += 1
     db.session.commit()
     return jsonify({'ok': True, 'atualizadas': atualizadas})

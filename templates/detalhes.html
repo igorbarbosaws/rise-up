@@ -82,20 +82,27 @@
             </p>
             <h4 id="idi-valor">
                 {% if agencia.idi is not none %}
-                <span style="color:{% if agencia.idi < 2 %}#E11D48{% elif agencia.idi < 3 %}#f59e0b{% elif agencia.idi < 4 %}#eab308{% else %}#16a34a{% endif %};">
-                    {{ agencia.idi }}
-                </span>
-                <small style="font-size:.65rem;font-weight:500;display:block;margin-top:2px;">
-                    {% if agencia.idi < 2 %}Crítico
-                    {% elif agencia.idi < 3 %}Alerta
-                    {% elif agencia.idi < 4 %}Tolerável
-                    {% elif agencia.idi < 5 %}Bom
-                    {% else %}Excelente{% endif %}
-                </small>
+                <span>{{ agencia.idi }}</span>
                 {% else %}Não informado{% endif %}
             </h4>
-            {% if agencia.zona_bioclimatica %}
-            <small style="font-size:.72rem;opacity:.75;">
+            {# ── Eficiência vs. limite da zona bioclimática ── #}
+            {% if agencia.eficiencia_energetica is not none and agencia.zona_bioclimatica_consumo_ref %}
+                {% set efic_anual = agencia.eficiencia_energetica * 12 %}
+                {% set consumo_ref = agencia.zona_bioclimatica_consumo_ref %}
+                {% if efic_anual <= consumo_ref %}
+                <small style="font-size:.72rem;color:#16a34a;font-weight:600;display:block;margin-top:4px;">
+                    <i class="fas fa-check-circle"></i> Eficiência dentro do limite
+                </small>
+                {% else %}
+                <small style="font-size:.72rem;color:#E11D48;font-weight:600;display:block;margin-top:4px;">
+                    <i class="fas fa-exclamation-circle"></i> Eficiência acima do limite
+                </small>
+                {% endif %}
+                <small style="font-size:.68rem;opacity:.7;display:block;margin-top:2px;">
+                    {{ efic_anual | round(1) }} kWh/m²·ano · Ref.: {{ consumo_ref }} kWh/m²·ano
+                </small>
+            {% elif agencia.zona_bioclimatica %}
+            <small style="font-size:.72rem;opacity:.75;display:block;margin-top:4px;">
                 {{ agencia.zona_bioclimatica_descricao }}
             </small>
             {% endif %}
@@ -209,9 +216,29 @@
                         <td><i class="fas fa-plug"></i> Eficiência Energética:</td>
                         <td>
                             {% if agencia.eficiencia_energetica is not none %}
-                            {{ agencia.eficiencia_energetica }} kWh/m²
+                            {{ agencia.eficiencia_energetica }} kWh/m²<small>/mês</small>
+                            {% if agencia.zona_bioclimatica_consumo_ref %}
+                                {% set efic_anual = agencia.eficiencia_energetica * 12 %}
+                                {% set consumo_ref = agencia.zona_bioclimatica_consumo_ref %}
+                                <br>
+                                <small style="font-size:.78rem;">
+                                    Anualizado: <strong>{{ efic_anual | round(1) }} kWh/m²·ano</strong>
+                                    &nbsp;·&nbsp; Limite zona {{ agencia.zona_bioclimatica }}: <strong>{{ consumo_ref }} kWh/m²·ano</strong>
+                                    &nbsp;
+                                    {% if efic_anual <= consumo_ref %}
+                                    <span style="color:#16a34a;font-weight:700;">
+                                        <i class="fas fa-check-circle"></i> Dentro do limite
+                                    </span>
+                                    {% else %}
+                                    <span style="color:#E11D48;font-weight:700;">
+                                        <i class="fas fa-exclamation-circle"></i> Acima do limite
+                                        (+{{ ((efic_anual - consumo_ref) / consumo_ref * 100) | round(1) }}%)
+                                    </span>
+                                    {% endif %}
+                                </small>
+                            {% endif %}
                             {% elif agencia.consumo_energia and agencia.area_util %}
-                            {{ (agencia.consumo_energia / agencia.area_util) | round(2) }} kWh/m²
+                            {{ (agencia.consumo_energia / agencia.area_util) | round(2) }} kWh/m²<small>/mês</small>
                             {% else %}
                             <em class="text-muted">Não informado</em>
                             {% endif %}
@@ -236,23 +263,8 @@
                         <td><i class="fas fa-tachometer-alt"></i> IDI:</td>
                         <td>
                             {% if agencia.idi is not none %}
-                            {% set idi_color = '#E11D48' if agencia.idi < 2 else ('#f59e0b' if agencia.idi < 3 else ('#eab308' if agencia.idi < 4 else '#16a34a')) %}
-                            <strong style="color:{{ idi_color }};">{{ agencia.idi }}</strong>
-                            <small class="text-muted" style="margin-left:6px;">
-                                — {% if agencia.idi < 2 %}Crítico (acima do limite da zona)
-                                {% elif agencia.idi < 3 %}Alerta (próximo do limite)
-                                {% elif agencia.idi < 4 %}Tolerável
-                                {% elif agencia.idi < 5 %}Bom
-                                {% else %}Excelente{% endif %}
-                            </small>
-                            {% if agencia.eficiencia_energetica is not none %}
-                            <br><small class="text-muted" style="font-size:.78rem;">
-                                Eficiência: {{ agencia.eficiencia_energetica }} kWh/m²
-                                {% if agencia.zona_bioclimatica_consumo_ref %}
-                                · Limite zona: {{ agencia.zona_bioclimatica_consumo_ref }} kWh/m²·ano
-                                {% endif %}
-                            </small>
-                            {% endif %}
+                            <strong>{{ agencia.idi }}</strong>
+                            <small class="text-muted" style="margin-left:6px;">— Índice de Disponibilidade de Infraestrutura (informado pela engenharia)</small>
                             {% else %}
                             <em class="text-muted">Não informado</em>
                             {% endif %}
@@ -697,14 +709,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">IDI</label>
-                    <div class="form-input" style="background:#f8fafc;color:var(--text-muted);cursor:default;display:flex;align-items:center;gap:8px;">
-                        <i class="fas fa-calculator" style="color:var(--bb-blue);"></i>
-                        <span>
-                            {% if agencia.idi is not none %}{{ agencia.idi }}{% else %}—{% endif %}
-                            <small style="font-size:.75rem;"> (calculado automaticamente)</small>
-                        </span>
-                    </div>
+                    <label class="form-label">IDI — Índice de Disponibilidade de Infraestrutura (1,0 – 5,0) <span style="font-size:.78rem;color:var(--text-muted);font-weight:400;">— informado pela engenharia</span></label>
+                    <input type="number" step="0.01" min="1" max="5" class="form-input" id="edit-idi"
+                           placeholder="Ex: 3.74"
+                           value="{% if agencia.idi is not none %}{{ agencia.idi }}{% endif %}">
                 </div>
             </div>
             <div class="form-grid cols-2" style="margin-bottom:16px;">
@@ -778,6 +786,7 @@ async function salvarEdicao(e) {
         classificacao_bacen:  document.getElementById('edit-classificacao-bacen').value || null,
         email_agencia:        document.getElementById('edit-email-agencia').value.trim() || null,
         cnpj:                 document.getElementById('edit-cnpj').value.trim() || null,
+        idi:                  document.getElementById('edit-idi').value || null,
     };
     try {
         const res  = await fetch('/api/agencias/{{ agencia.id }}', {
@@ -1095,28 +1104,19 @@ async function salvarEdicao(e) {
 </script>
 
 <script>
-// ─── IDI: busca limiar e aplica indicação visual ───────────────────────────
-const AGENCIA_ID = {{ agencia.id }};
+// ─── Eficiência energética vs. limite da zona bioclimática ────────────────
+(function aplicarStatusEficiencia() {
+    const efic     = {{ agencia.eficiencia_energetica if agencia.eficiencia_energetica is not none else 'null' }};
+    const consumoRef = {{ agencia.zona_bioclimatica_consumo_ref if agencia.zona_bioclimatica_consumo_ref else 'null' }};
+    const card = document.getElementById('card-idi');
 
-(async function carregarIDI() {
-    try {
-        const res = await fetch('/api/config/limiar-idi');
-        const cfg = await res.json();
-        const limiar = cfg.limiar_idi || 3.0;
-        const idi = {{ agencia.idi if agencia.idi is not none else 'null' }};
-        const card = document.getElementById('card-idi');
-        const h4   = document.getElementById('idi-valor');
-        if (idi === null) {
-            h4.textContent = 'IDI não informado';
-        } else {
-            h4.textContent = idi.toFixed(1);
-            if (idi < limiar) {
-                card.classList.add('critico');
-                card.style.borderLeftColor = 'var(--color-red)';
-                h4.style.color = 'var(--color-red)';
-            }
-        }
-    } catch(e) { console.error('Erro ao carregar limiar IDI:', e); }
+    if (efic === null || consumoRef === null || !card) return;
+
+    const eficAnual = efic * 12;
+    if (eficAnual > consumoRef) {
+        card.classList.add('critico');
+        card.style.borderLeftColor = 'var(--color-red)';
+    }
 })();
 
 // ─── DWG ──────────────────────────────────────────────────────────────────
