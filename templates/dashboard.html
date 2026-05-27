@@ -106,7 +106,15 @@
                 <td class="text-muted" style="font-size:.82rem;">{{ ag.gerente }}</td>
                 <td style="text-align:center;">
                     {% if ag.idi %}
-                    <span style="background:#fef3c7;color:#92400e;padding:2px 10px;border-radius:12px;font-weight:700;font-size:.8rem;">{{ ag.idi }}</span>
+                    {% if ag.idi >= 4.0 %}
+                    <span style="background:#14532d;color:#bbf7d0;padding:2px 10px;border-radius:12px;font-weight:700;font-size:.8rem;">{{ ag.idi }}</span>
+                    {% elif ag.idi >= 3.0 %}
+                    <span style="background:#dcfce7;color:#166534;padding:2px 10px;border-radius:12px;font-weight:700;font-size:.8rem;">{{ ag.idi }}</span>
+                    {% elif ag.idi >= 2.0 %}
+                    <span style="background:#fff7ed;color:#9a3412;padding:2px 10px;border-radius:12px;font-weight:700;font-size:.8rem;">{{ ag.idi }}</span>
+                    {% else %}
+                    <span style="background:#fee2e2;color:#991b1b;padding:2px 10px;border-radius:12px;font-weight:700;font-size:.8rem;">{{ ag.idi }}</span>
+                    {% endif %}
                     {% else %}
                     <span style="color:var(--text-muted);font-size:.8rem;">—</span>
                     {% endif %}
@@ -211,7 +219,15 @@
                     </span>
                 </td>
                 <td style="text-align:center;">
+                    {% if ag.idi >= 4.0 %}
+                    <span style="background:#14532d;color:#bbf7d0;padding:2px 12px;border-radius:12px;font-weight:800;font-size:.85rem;">{{ ag.idi }}</span>
+                    {% elif ag.idi >= 3.0 %}
+                    <span style="background:#dcfce7;color:#166534;padding:2px 12px;border-radius:12px;font-weight:800;font-size:.85rem;">{{ ag.idi }}</span>
+                    {% elif ag.idi >= 2.0 %}
+                    <span style="background:#fff7ed;color:#9a3412;padding:2px 12px;border-radius:12px;font-weight:800;font-size:.85rem;">{{ ag.idi }}</span>
+                    {% else %}
                     <span style="background:#fee2e2;color:#991b1b;padding:2px 12px;border-radius:12px;font-weight:800;font-size:.85rem;">{{ ag.idi }}</span>
+                    {% endif %}
                 </td>
                 <td style="text-align:center;">
                     <a href="/detalhes/{{ ag.prefixo }}" class="btn btn-primary" style="padding:5px 12px;font-size:.78rem;">
@@ -380,10 +396,10 @@
                 <tr>
                     <th style="width:60px;">Zona</th>
                     <th>Região / Descrição</th>
-                    <th style="text-align:right;">Consumo Ref. (kWh/m²·ano)</th>
+                    <th style="text-align:right;">Consumo Ref. (kWh/m²·mês)</th>
                     <th style="text-align:center;">Agências</th>
                     <th style="text-align:center;">IDI Médio</th>
-                    <th style="text-align:center;">Efic. Energética</th>
+                    <th style="text-align:center;">Efic. Energética (kWh/m²·mês)</th>
                     <th style="text-align:center;">Distribuição</th>
                 </tr>
             </thead>
@@ -391,9 +407,10 @@
             {% set max_zona_total = stats.zonas_lista | map(attribute='total') | max %}
             {% set zona_cores = ['#0038A8','#1e40af','#2563eb','#3b82f6','#0891b2','#0d9488','#16a34a','#65a30d'] %}
             {% for z in stats.zonas_lista %}
-            {# Calcula eficiência média anual da zona para comparar com o limite #}
-            {% set efic_media_anual = (z.efic_media * 12) | round(1) if z.efic_media is defined and z.efic_media is not none else none %}
-            {% set zona_acima = (efic_media_anual is not none and efic_media_anual > z.consumo_ref) %}
+            {# Compara eficiência média mensal com o limite mensal da zona #}
+            {% set efic_media_mensal = z.efic_media | round(2) if z.efic_media is defined and z.efic_media is not none else none %}
+            {% set limite_mensal_zona = (z.consumo_ref / 12) | round(2) %}
+            {% set zona_acima = (efic_media_mensal is not none and efic_media_mensal > limite_mensal_zona) %}
             <tr {% if zona_acima %}style="background:#fff7ed;"{% endif %}>
                 <td style="text-align:center;">
                     <span style="display:inline-flex;align-items:center;justify-content:center;
@@ -420,7 +437,10 @@
                 <td style="text-align:center;">
                     {% if z.idi_medio is not none %}
                     <span style="padding:2px 10px;border-radius:12px;font-weight:700;font-size:.8rem;
-                                 background:{% if z.idi_medio < 2 %}#fee2e2;color:#991b1b{% elif z.idi_medio < 3 %}#fef3c7;color:#92400e{% else %}#dcfce7;color:#166534{% endif %};">
+                                 {% if z.idi_medio >= 4.0 %}background:#14532d;color:#bbf7d0;
+                                 {% elif z.idi_medio >= 3.0 %}background:#dcfce7;color:#166534;
+                                 {% elif z.idi_medio >= 2.0 %}background:#fff7ed;color:#9a3412;
+                                 {% else %}background:#fee2e2;color:#991b1b;{% endif %}">
                         {{ z.idi_medio }}
                     </span>
                     {% else %}
@@ -428,16 +448,16 @@
                     {% endif %}
                 </td>
                 <td style="text-align:center;">
-                    {% if efic_media_anual is not none %}
+                    {% if efic_media_mensal is not none %}
                     <span style="display:inline-flex;align-items:center;gap:4px;
                                  padding:2px 10px;border-radius:12px;font-weight:700;font-size:.8rem;
                                  {% if zona_acima %}background:#fee2e2;color:#991b1b;{% else %}background:#dcfce7;color:#166534;{% endif %}">
                         <i class="fas {% if zona_acima %}fa-arrow-up{% else %}fa-check{% endif %}"></i>
-                        {{ efic_media_anual }} kWh/m²·ano
+                        {{ efic_media_mensal }} kWh/m²·mês
                     </span>
                     {% if zona_acima %}
                     <div style="font-size:.7rem;color:#c2410c;margin-top:2px;">
-                        +{{ ((efic_media_anual - z.consumo_ref) / z.consumo_ref * 100) | round(1) }}% acima
+                        +{{ ((efic_media_mensal - limite_mensal_zona) / limite_mensal_zona * 100) | round(1) }}% acima
                     </div>
                     {% endif %}
                     {% else %}

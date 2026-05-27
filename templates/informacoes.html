@@ -249,7 +249,7 @@ function renderTabela(lista) {
 
     tbody.innerHTML = lista.map(ag => {
         const idiHtml = ag.idi != null
-            ? `<span class="idi-badge ${ag.idi < limiarIDI ? 'idi-critico' : 'idi-ok'}">${ag.idi.toFixed(1)}</span>`
+            ? `<span class="idi-badge ${idiCorClasse(ag.idi)}">${ag.idi.toFixed(1)}</span>`
             : `<span class="idi-badge idi-nd">—</span>`;
 
         const statusClass = ag.status === 'Operação Normal' ? 'badge-ok'
@@ -323,6 +323,14 @@ function escHtml(str) {
     return String(str)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
         .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function idiCorClasse(idi) {
+    if (idi == null) return 'idi-nd';
+    if (idi >= 4.0)  return 'idi-verde-escuro';
+    if (idi >= 3.0)  return 'idi-verde-claro';
+    if (idi >= 2.0)  return 'idi-laranja';
+    return 'idi-vermelho';
 }
 
 init();
@@ -482,9 +490,14 @@ init();
     font-weight: 800;
     font-size: .8rem;
 }
+.idi-verde-escuro { background: #14532d; color: #bbf7d0; }
+.idi-verde-claro  { background: #dcfce7; color: #166534; }
+.idi-laranja      { background: #fff7ed; color: #9a3412; }
+.idi-vermelho     { background: #fee2e2; color: #991b1b; }
+.idi-nd           { background: #f1f5f9; color: var(--text-muted); }
+/* legado — mantido por compatibilidade */
 .idi-ok     { background: #dcfce7; color: #166534; }
 .idi-critico { background: #fee2e2; color: #991b1b; }
-.idi-nd     { background: #f1f5f9; color: var(--text-muted); }
 
 /* ── Zona bioclimática badge ───────────────────────────────────────────── */
 .zona-badge {

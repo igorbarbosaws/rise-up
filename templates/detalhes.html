@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Informações — Agência {{ agencia.prefixo }} | Portal DISEC{% endblock %}
 
+{# ── Macro: cor de fundo e texto para badge IDI ──────────────────────────── #}
+{% macro idi_style(idi) %}{% if idi is none %}background:#f1f5f9;color:#6b7280;{% elif idi >= 4.0 %}background:#14532d;color:#bbf7d0;{% elif idi >= 3.0 %}background:#dcfce7;color:#166534;{% elif idi >= 2.0 %}background:#fff7ed;color:#9a3412;{% else %}background:#fee2e2;color:#991b1b;{% endif %}{% endmacro %}
+
 {% block content %}
 <div class="detalhes-wrapper">
 
@@ -72,7 +75,7 @@
                 {% endif %}
             </h4>
         </div>
-        <div class="status-card esg" id="card-idi">
+        <div class="status-card {% if agencia.idi is none %}idi-nd{% elif agencia.idi >= 4.0 %}idi-verde-escuro{% elif agencia.idi >= 3.0 %}idi-verde-claro{% elif agencia.idi >= 2.0 %}idi-laranja{% else %}idi-vermelho{% endif %}" id="card-idi">
             <p>IDI
                 {% if agencia.zona_bioclimatica %}
                 <span style="font-size:.68rem;font-weight:600;opacity:.7;margin-left:4px;">
@@ -82,14 +85,14 @@
             </p>
             <h4 id="idi-valor">
                 {% if agencia.idi is not none %}
-                <span>{{ agencia.idi }}</span>
+                <span style="display:inline-block;padding:2px 14px;border-radius:14px;font-weight:800;{{ idi_style(agencia.idi) }}">{{ agencia.idi }}</span>
                 {% else %}Não informado{% endif %}
             </h4>
             {# ── Eficiência vs. limite da zona bioclimática ── #}
             {% if agencia.eficiencia_energetica is not none and agencia.zona_bioclimatica_consumo_ref %}
-                {% set efic_anual = agencia.eficiencia_energetica * 12 %}
+                {% set efic = agencia.eficiencia_energetica %}
                 {% set consumo_ref = agencia.zona_bioclimatica_consumo_ref %}
-                {% if efic_anual <= consumo_ref %}
+                {% if efic <= consumo_ref %}
                 <small style="font-size:.72rem;color:#16a34a;font-weight:600;display:block;margin-top:4px;">
                     <i class="fas fa-check-circle"></i> Eficiência dentro do limite
                 </small>
@@ -99,7 +102,7 @@
                 </small>
                 {% endif %}
                 <small style="font-size:.68rem;opacity:.7;display:block;margin-top:2px;">
-                    {{ efic_anual | round(1) }} kWh/m²·ano · Ref.: {{ consumo_ref }} kWh/m²·ano
+                    {{ efic }} kWh/m²·mês · Ref.: {{ consumo_ref }} kWh/m²·mês
                 </small>
             {% elif agencia.zona_bioclimatica %}
             <small style="font-size:.72rem;opacity:.75;display:block;margin-top:4px;">
@@ -202,11 +205,11 @@
                 {% endif %}
 
                 {# ── Cálculo de alerta de eficiência energética ──────────────────── #}
-                {% set efic_mensal = agencia.eficiencia_energetica if agencia.eficiencia_energetica is not none
-                                     else ((agencia.consumo_energia / agencia.area_util) | round(2)
-                                           if agencia.consumo_energia and agencia.area_util else none) %}
-                {% set limite_zona = agencia.zona_bioclimatica_consumo_ref %}
-                {% set acima_limite = (efic_mensal is not none and limite_zona is not none and efic_mensal > limite_zona) %}
+                {% set efic = agencia.eficiencia_energetica if agencia.eficiencia_energetica is not none
+                               else ((agencia.consumo_energia / agencia.area_util) | round(2)
+                                     if agencia.consumo_energia and agencia.area_util else none) %}
+                {% set consumo_ref = agencia.zona_bioclimatica_consumo_ref %}
+                {% set acima_limite = (efic is not none and consumo_ref is not none and efic > consumo_ref) %}
 
                 {# ── Banner de alerta quando acima do limite ──────────────────────── #}
                 {% if acima_limite %}
@@ -215,10 +218,10 @@
                     <div class="efic-alerta-body">
                         <strong>Consumo acima do limite da Zona {{ agencia.zona_bioclimatica }}</strong>
                         <span>
-                            Eficiência mensal: <strong>{{ efic_mensal }} kWh/m²/mês</strong>
-                            — Limite NBR 15220: <strong>{{ limite_zona }} kWh/m²/mês</strong>
+                            Eficiência: <strong>{{ efic }} kWh/m²·mês</strong>
+                            — Limite NBR 15220: <strong>{{ consumo_ref }} kWh/m²·mês</strong>
                             <span class="efic-alerta-excesso">
-                                (+{{ ((efic_mensal - limite_zona) / limite_zona * 100) | round(1) }}% acima)
+                                (+{{ ((efic - consumo_ref) / consumo_ref * 100) | round(1) }}% acima)
                             </span>
                         </span>
                     </div>
@@ -242,21 +245,20 @@
                             {% if agencia.eficiencia_energetica is not none %}
                             {{ agencia.eficiencia_energetica }} kWh/m²<small>/mês</small>
                             {% if agencia.zona_bioclimatica_consumo_ref %}
-                                {% set efic_anual = agencia.eficiencia_energetica * 12 %}
+                                {% set efic = agencia.eficiencia_energetica %}
                                 {% set consumo_ref = agencia.zona_bioclimatica_consumo_ref %}
                                 <br>
                                 <small style="font-size:.78rem;">
-                                    Anualizado: <strong>{{ efic_anual | round(1) }} kWh/m²·ano</strong>
-                                    &nbsp;·&nbsp; Limite zona {{ agencia.zona_bioclimatica }}: <strong>{{ consumo_ref }} kWh/m²·ano</strong>
+                                    Limite zona {{ agencia.zona_bioclimatica }}: <strong>{{ consumo_ref }} kWh/m²·mês</strong>
                                     &nbsp;
-                                    {% if efic_anual <= consumo_ref %}
+                                    {% if efic <= consumo_ref %}
                                     <span style="color:#16a34a;font-weight:700;">
                                         <i class="fas fa-check-circle"></i> Dentro do limite
                                     </span>
                                     {% else %}
                                     <span style="color:#E11D48;font-weight:700;">
                                         <i class="fas fa-exclamation-circle"></i> Acima do limite
-                                        (+{{ ((efic_anual - consumo_ref) / consumo_ref * 100) | round(1) }}%)
+                                        (+{{ ((efic - consumo_ref) / consumo_ref * 100) | round(1) }}%)
                                     </span>
                                     {% endif %}
                                 </small>
@@ -276,7 +278,7 @@
                             — {{ agencia.zona_bioclimatica_descricao }}
                             <br>
                             <small class="text-muted">
-                                Consumo máx. referência: {{ limite_zona }} kWh/m²/mês
+                                Consumo máx. referência: {{ agencia.zona_bioclimatica_consumo_ref }} kWh/m²·mês
                             </small>
                             {% else %}
                             <em class="text-muted">Não informada</em>
@@ -287,7 +289,7 @@
                         <td><i class="fas fa-tachometer-alt"></i> IDI:</td>
                         <td>
                             {% if agencia.idi is not none %}
-                            <strong>{{ agencia.idi }}</strong>
+                            <span style="display:inline-block;padding:2px 12px;border-radius:12px;font-weight:800;font-size:.9rem;{{ idi_style(agencia.idi) }}">{{ agencia.idi }}</span>
                             <small class="text-muted" style="margin-left:6px;">— Índice de Disponibilidade de Infraestrutura (informado pela engenharia)</small>
                             {% else %}
                             <em class="text-muted">Não informado</em>
@@ -722,14 +724,14 @@
                     <label class="form-label"><i class="fas fa-sun"></i> Zona Bioclimática (NBR 15220)</label>
                     <select class="form-input" id="edit-zona-bioclimatica">
                         <option value="">— Não informada —</option>
-                        <option value="1" {% if agencia.zona_bioclimatica == 1 %}selected{% endif %}>Zona 1 — Norte úmido (Manaus, Belém) · ref. 120 kWh/m²·ano</option>
-                        <option value="2" {% if agencia.zona_bioclimatica == 2 %}selected{% endif %}>Zona 2 — Nordeste litorâneo · ref. 110 kWh/m²·ano</option>
-                        <option value="3" {% if agencia.zona_bioclimatica == 3 %}selected{% endif %}>Zona 3 — Semiárido (Petrolina) · ref. 100 kWh/m²·ano</option>
-                        <option value="4" {% if agencia.zona_bioclimatica == 4 %}selected{% endif %}>Zona 4 — Centro-Oeste (Brasília, Goiânia) · ref. 95 kWh/m²·ano</option>
-                        <option value="5" {% if agencia.zona_bioclimatica == 5 %}selected{% endif %}>Zona 5 — Sudeste quente (SP interior) · ref. 90 kWh/m²·ano</option>
-                        <option value="6" {% if agencia.zona_bioclimatica == 6 %}selected{% endif %}>Zona 6 — Sul subtropical (Curitiba) · ref. 85 kWh/m²·ano</option>
-                        <option value="7" {% if agencia.zona_bioclimatica == 7 %}selected{% endif %}>Zona 7 — Sul temperado (Porto Alegre) · ref. 80 kWh/m²·ano</option>
-                        <option value="8" {% if agencia.zona_bioclimatica == 8 %}selected{% endif %}>Zona 8 — Serra Gaúcha / frio intenso · ref. 75 kWh/m²·ano</option>
+                        <option value="1" {% if agencia.zona_bioclimatica == 1 %}selected{% endif %}>Zona 1 — Norte úmido (Manaus, Belém) · ref. 120 kWh/m²·mês</option>
+                        <option value="2" {% if agencia.zona_bioclimatica == 2 %}selected{% endif %}>Zona 2 — Nordeste litorâneo · ref. 110 kWh/m²·mês</option>
+                        <option value="3" {% if agencia.zona_bioclimatica == 3 %}selected{% endif %}>Zona 3 — Semiárido (Petrolina) · ref. 100 kWh/m²·mês</option>
+                        <option value="4" {% if agencia.zona_bioclimatica == 4 %}selected{% endif %}>Zona 4 — Centro-Oeste (Brasília, Goiânia) · ref. 95 kWh/m²·mês</option>
+                        <option value="5" {% if agencia.zona_bioclimatica == 5 %}selected{% endif %}>Zona 5 — Sudeste quente (SP interior) · ref. 90 kWh/m²·mês</option>
+                        <option value="6" {% if agencia.zona_bioclimatica == 6 %}selected{% endif %}>Zona 6 — Sul subtropical (Curitiba) · ref. 85 kWh/m²·mês</option>
+                        <option value="7" {% if agencia.zona_bioclimatica == 7 %}selected{% endif %}>Zona 7 — Sul temperado (Porto Alegre) · ref. 80 kWh/m²·mês</option>
+                        <option value="8" {% if agencia.zona_bioclimatica == 8 %}selected{% endif %}>Zona 8 — Serra Gaúcha / frio intenso · ref. 75 kWh/m²·mês</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1193,16 +1195,15 @@ async function salvarEdicao(e) {
 <script>
 // ─── Eficiência energética vs. limite da zona bioclimática ────────────────
 (function aplicarStatusEficiencia() {
-    const efic     = {{ agencia.eficiencia_energetica if agencia.eficiencia_energetica is not none else 'null' }};
+    const efic       = {{ agencia.eficiencia_energetica if agencia.eficiencia_energetica is not none else 'null' }};
     const consumoRef = {{ agencia.zona_bioclimatica_consumo_ref if agencia.zona_bioclimatica_consumo_ref else 'null' }};
     const card = document.getElementById('card-idi');
 
     if (efic === null || consumoRef === null || !card) return;
 
-    const eficAnual = efic * 12;
-    if (eficAnual > consumoRef) {
+    // Não sobrescreve a cor do IDI — apenas adiciona classe de alerta se acima do limite
+    if (efic > consumoRef) {
         card.classList.add('critico');
-        card.style.borderLeftColor = 'var(--color-red)';
     }
 })();
 

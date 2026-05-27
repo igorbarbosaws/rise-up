@@ -895,6 +895,13 @@ input, select, textarea { font-family: inherit; }
 .status-card.warning { border-left-color: var(--color-yellow); }
 .status-card.esg     { border-left-color: var(--color-green); }
 
+/* IDI card — mesma lógica de cor dos badges */
+.status-card.idi-verde-escuro { border-left-color: #14532d; }
+.status-card.idi-verde-claro  { border-left-color: var(--color-green); }
+.status-card.idi-laranja      { border-left-color: var(--color-yellow); }
+.status-card.idi-vermelho     { border-left-color: var(--color-red); }
+.status-card.idi-nd           { border-left-color: var(--border-color); }
+
 .status-card p {
     font-size: 0.7rem;
     color: var(--text-muted);

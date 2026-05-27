@@ -48,7 +48,7 @@ CLASSIFICACOES_BACEN = [
 ]
 DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo']
 
-# Zonas bioclimáticas brasileiras (NBR 15220) com consumo máximo de referência (kWh/m²·ano)
+# Zonas bioclimáticas brasileiras (NBR 15220) com consumo máximo de referência (kWh/m²·mês)
 ZONAS_BIOCLIMATICAS = {
     1: {'descricao': 'Norte úmido (Manaus, Belém)',       'consumo_ref': 120},
     2: {'descricao': 'Nordeste litorâneo',                'consumo_ref': 110},
@@ -446,7 +446,7 @@ def email_recuperacao_senha(usuario, link_redefinir):
 
 
 def calcular_eficiencia_energetica(consumo_energia, area_util):
-    """Calcula eficiência energética mensal em kWh/m².
+    """Calcula eficiência energética em kWh/m²·mês.
     Retorna round(consumo / area, 2) ou None se area_util for zero/None.
     """
     if not consumo_energia or not area_util:
@@ -460,6 +460,7 @@ def calcular_idi_por_zona(consumo_energia, area_util, zona_bioclimatica):
     Fórmula:
       efic_mensal = consumo_energia / area_util   [kWh/m²·mês]
       ratio       = efic_mensal / consumo_ref_zona
+                    (consumo_ref em kWh/m²·mês — comparação direta com o valor mensal)
 
     Mapeamento linear contínuo por faixa de ratio:
       ratio <= 0.00  → IDI 5.0
@@ -482,16 +483,12 @@ def calcular_idi_por_zona(consumo_energia, area_util, zona_bioclimatica):
     if ratio >= 1.00:
         idi = 1.0
     elif ratio >= 0.90:
-        # 0.90–1.00 → 2.0–1.0
         idi = 2.0 - ((ratio - 0.90) / 0.10) * 1.0
     elif ratio >= 0.75:
-        # 0.75–0.90 → 3.0–2.0
         idi = 3.0 - ((ratio - 0.75) / 0.15) * 1.0
     elif ratio >= 0.60:
-        # 0.60–0.75 → 4.0–3.0
         idi = 4.0 - ((ratio - 0.60) / 0.15) * 1.0
     else:
-        # 0.00–0.60 → 5.0–4.0
         idi = 5.0 - (ratio / 0.60) * 1.0
 
     return round(max(1.0, min(5.0, idi)), 2)
