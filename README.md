@@ -2,6 +2,21 @@
 
 > Desenvolvido durante a residência tecnológica do Porto Digital, este sistema web visa otimizar a gestão e o monitoramento de agências bancárias através de análises estratégicas avançadas.
 
+A aplicação permite consultar dados operacionais, acompanhar indicadores de desempenho, monitorar eficiência energética, gerenciar documentos técnicos, controlar vistorias de segurança e administrar usuários com diferentes níveis de acesso.
+
+## Equipe Responsável
+
+O desenvolvimento do Portal DISEC foi realizado de forma colaborativa durante o Programa de Residência Tecnológica do Porto Digital. Nossa equipe foi responsável pelas etapas de planejamento, análise de requisitos, modelagem, desenvolvimento, testes e documentação do sistema.
+
+Integrantes da equipe:
+
+-  [Filipe José]()
+-  [Flávio Gonçalves](https://github.com/flavinhogs)
+-  [Gabriel Roberto](https://github.com/GABRIELR48O)
+-  [Gabriel Tenório](https://github.com/gaahtenorio)
+-  [Guilherme Gonçalves]()
+-  [Ibson Gomes](https://github.com/ibsongomes)
+-  [Igor Barbosa](https://github.com/igorbarbosaws)
 ---
 
 ## Índice
