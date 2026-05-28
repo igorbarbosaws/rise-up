@@ -1194,6 +1194,8 @@ async function salvarEdicao(e) {
 
 <script>
 // ─── Eficiência energética vs. limite da zona bioclimática ────────────────
+const AGENCIA_ID = {{ agencia.id }};
+
 (function aplicarStatusEficiencia() {
     const efic       = {{ agencia.eficiencia_energetica if agencia.eficiencia_energetica is not none else 'null' }};
     const consumoRef = {{ agencia.zona_bioclimatica_consumo_ref if agencia.zona_bioclimatica_consumo_ref else 'null' }};
