@@ -336,7 +336,7 @@
                     : Math.round((ag.consumo_energia / ag.area_util) * 100) / 100;
                 const limiteZona = ag.zona_bioclimatica_consumo_ref;
                 if (limiteZona != null) {
-                    const limiteMensal = Math.round(limiteZona / 12 * 100) / 100;
+                    const limiteMensal = limiteZona;
                     const acima = eficMensal > limiteMensal;
                     const pct   = Math.round((eficMensal - limiteMensal) / limiteMensal * 1000) / 10;
                     eficBadge = acima
