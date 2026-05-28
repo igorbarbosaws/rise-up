@@ -290,7 +290,7 @@
                         <td>
                             {% if agencia.idi is not none %}
                             <span style="display:inline-block;padding:2px 12px;border-radius:12px;font-weight:800;font-size:.9rem;{{ idi_style(agencia.idi) }}">{{ agencia.idi }}</span>
-                            <small class="text-muted" style="margin-left:6px;">— Índice de Disponibilidade de Infraestrutura (informado pela engenharia)</small>
+                            <small class="text-muted" style="margin-left:6px;">— Índice de Disponibilidade de Infraestrutura</small>
                             {% else %}
                             <em class="text-muted">Não informado</em>
                             {% endif %}
@@ -735,7 +735,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">IDI — Índice de Disponibilidade de Infraestrutura (1,0 – 5,0) <span style="font-size:.78rem;color:var(--text-muted);font-weight:400;">— informado pela engenharia</span></label>
+                    <label class="form-label">IDI — Índice de Disponibilidade de Infraestrutura (1,0 – 5,0)</label>
                     <input type="number" step="0.01" min="1" max="5" class="form-input" id="edit-idi"
                            placeholder="Ex: 3.74"
                            value="{% if agencia.idi is not none %}{{ agencia.idi }}{% endif %}">
