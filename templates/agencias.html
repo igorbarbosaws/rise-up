@@ -382,27 +382,58 @@
         `}).join('');
     }
 
+    // Centros e zoom aproximado por região para navegação rápida
+    const centrosPorRegiao = {
+        'Norte':        { lat: -3.5,   lng: -62.0,  zoom: 5 },
+        'Nordeste':     { lat: -8.5,   lng: -38.5,  zoom: 6 },
+        'Centro-Oeste': { lat: -15.5,  lng: -52.5,  zoom: 6 },
+        'Sudeste':      { lat: -20.0,  lng: -43.5,  zoom: 6 },
+        'Sul':          { lat: -27.5,  lng: -51.5,  zoom: 6 },
+    };
+
     function renderMapa(agencias) {
         if (!gMap) return;
         limparMarcadores();
         agencias.forEach(ag => adicionarMarcador(ag));
 
-        if (gMarkers.length > 0) {
+        const regiao = document.getElementById('filter-regiao').value;
+        const uf     = document.getElementById('filter-estado').value;
+        const q      = document.getElementById('search-input').value.trim();
+
+        if (!regiao && !uf && !q) {
+            // Sem filtro: volta ao centro do Brasil
+            gMap.setCenter({ lat: -15.78, lng: -47.93 });
+            gMap.setZoom(5);
+            return;
+        }
+
+        if (uf && gMarkers.length > 0) {
+            // Estado específico: ajusta bounds nos marcadores
             const bounds = new google.maps.LatLngBounds();
             gMarkers.forEach(m => bounds.extend(m.getPosition()));
+            gMap.fitBounds(bounds, { padding: 80 });
+            google.maps.event.addListenerOnce(gMap, 'idle', () => {
+                if (gMap.getZoom() > 14) gMap.setZoom(14);
+            });
+            return;
+        }
 
-            // Só ajusta o zoom se houver filtro ativo (região, estado ou busca textual)
-            const temFiltro = document.getElementById('filter-estado').value ||
-                              document.getElementById('filter-regiao').value ||
-                              document.getElementById('search-input').value.trim();
+        if (regiao && centrosPorRegiao[regiao]) {
+            // Região: navega para o centro pré-definido da região
+            const c = centrosPorRegiao[regiao];
+            gMap.setCenter({ lat: c.lat, lng: c.lng });
+            gMap.setZoom(c.zoom);
+            return;
+        }
 
-            if (temFiltro) {
-                gMap.fitBounds(bounds, { padding: 60 });
-                const listener = google.maps.event.addListener(gMap, 'idle', () => {
-                    if (gMap.getZoom() > 14) gMap.setZoom(14);
-                    google.maps.event.removeListener(listener);
-                });
-            }
+        if (q && gMarkers.length > 0) {
+            // Busca textual: ajusta bounds nos marcadores
+            const bounds = new google.maps.LatLngBounds();
+            gMarkers.forEach(m => bounds.extend(m.getPosition()));
+            gMap.fitBounds(bounds, { padding: 80 });
+            google.maps.event.addListenerOnce(gMap, 'idle', () => {
+                if (gMap.getZoom() > 14) gMap.setZoom(14);
+            });
         }
     }
 
