@@ -196,8 +196,8 @@
     // ── Callback do Google Maps — ponto único de entrada ──────────────────
     async function initMap() {
         gMap = new google.maps.Map(document.getElementById('google-map-agencias'), {
-            center: { lat: -14.235, lng: -51.925 },
-            zoom: 4,
+            center: { lat: -15.78, lng: -47.93 },
+            zoom: 5,
             mapTypeControl: false,
             streetViewControl: false,
             fullscreenControl: true
@@ -280,11 +280,18 @@
     async function buscarAgencias() {
         const q                  = document.getElementById('search-input').value.trim();
         const uf                 = document.getElementById('filter-estado').value;
+        const regiao             = document.getElementById('filter-regiao').value;
         const classificacaoBacen = document.getElementById('filter-classificacao-bacen').value;
 
         const params = new URLSearchParams();
         if (q)                  params.append('q', q);
-        if (uf)                 params.append('uf', uf);
+        if (uf) {
+            // Estado específico selecionado — tem prioridade
+            params.append('uf', uf);
+        } else if (regiao && estadosPorRegiao[regiao]) {
+            // Só região selecionada — passa todos os UFs da região
+            params.append('ufs', estadosPorRegiao[regiao].join(','));
+        }
         if (classificacaoBacen) params.append('classificacao_bacen', classificacaoBacen);
 
         let agencias;
@@ -383,11 +390,19 @@
         if (gMarkers.length > 0) {
             const bounds = new google.maps.LatLngBounds();
             gMarkers.forEach(m => bounds.extend(m.getPosition()));
-            gMap.fitBounds(bounds, { padding: 60 });
-            const listener = google.maps.event.addListener(gMap, 'idle', () => {
-                if (gMap.getZoom() > 14) gMap.setZoom(14);
-                google.maps.event.removeListener(listener);
-            });
+
+            // Só ajusta o zoom se houver filtro ativo (região, estado ou busca textual)
+            const temFiltro = document.getElementById('filter-estado').value ||
+                              document.getElementById('filter-regiao').value ||
+                              document.getElementById('search-input').value.trim();
+
+            if (temFiltro) {
+                gMap.fitBounds(bounds, { padding: 60 });
+                const listener = google.maps.event.addListener(gMap, 'idle', () => {
+                    if (gMap.getZoom() > 14) gMap.setZoom(14);
+                    google.maps.event.removeListener(listener);
+                });
+            }
         }
     }
 
@@ -404,7 +419,7 @@
         const sel    = document.getElementById('filter-estado');
         if (regiao && estadosPorRegiao[regiao]) {
             sel.disabled = false;
-            sel.innerHTML = '<option value="">Todos os Estados</option>';
+            sel.innerHTML = '<option value="">Todos os estados da região</option>';
             estadosPorRegiao[regiao].forEach(uf => {
                 const opt = document.createElement('option');
                 opt.value = uf; opt.text = uf;
@@ -414,6 +429,8 @@
             sel.disabled = true;
             sel.innerHTML = '<option value="">Selecione a Região</option>';
         }
+        // Aplica busca imediatamente ao mudar região
+        buscarAgencias();
     }
 
     // ── Painel de filtros ─────────────────────────────────────────────────
@@ -441,6 +458,10 @@
 
     document.getElementById('search-input').addEventListener('keypress', e => {
         if (e.key === 'Enter') buscarAgencias();
+    });
+
+    document.getElementById('filter-estado').addEventListener('change', () => {
+        buscarAgencias();
     });
 </script>
 

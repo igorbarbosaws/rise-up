@@ -903,6 +903,8 @@ def admin():
 def api_agencias():
     filtro = request.args.get('q', '').strip().lower()
     uf     = request.args.get('uf', '').strip().upper()
+    # Suporte a múltiplos UFs: ?ufs=GO,MT,MS
+    ufs_param = request.args.get('ufs', '').strip().upper()
 
     query = Agencia.query
 
@@ -917,6 +919,10 @@ def api_agencias():
         )
     if uf:
         query = query.filter_by(uf=uf)
+    elif ufs_param:
+        ufs_list = [u.strip() for u in ufs_param.split(',') if u.strip()]
+        if ufs_list:
+            query = query.filter(Agencia.uf.in_(ufs_list))
     classificacao_bacen = request.args.get('classificacao_bacen', '').strip()
     if classificacao_bacen:
         query = query.filter_by(classificacao_bacen=classificacao_bacen)
